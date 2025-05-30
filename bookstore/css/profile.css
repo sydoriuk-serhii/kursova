@@ -1,0 +1,104 @@
+/* Загальні стилі для профілю */
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Шапка сайту */
+header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* Контент профілю */
+.profile-section {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.profile-details {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.profile-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+.profile-info h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.profile-info p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.edit-profile-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.edit-profile-button:hover {
+    background-color: #0056b3;
+}
+
+/* Стилі для таблиці замовлень */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th, .orders-table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
+.orders-table th {
+    background-color: #f4f4f4;
+}
+
+.orders-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.orders-table td {
+    font-size: 14px;
+}
+
+/* Футер */
+footer {
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

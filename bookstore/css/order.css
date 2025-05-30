@@ -1,0 +1,100 @@
+/* Основной стиль страницы */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Заголовок страницы */
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+/* Навигация */
+nav {
+    margin-top: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 16px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Основной контейнер */
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Стили для таблицы заказов */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.orders-table th, .orders-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.orders-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.orders-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.orders-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Ссылки на удаление заказов */
+.orders-table a {
+    color: red;
+    text-decoration: none;
+}
+
+.orders-table a:hover {
+    text-decoration: underline;
+}
+
+/* Сообщение, если нет заказов */
+main p {
+    font-size: 18px;
+    color: #555;
+    text-align: center;
+}
+
+/* Подвал */
+footer {
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    padding: 15px;
+    margin-top: 30px;
+}
+
+footer p {
+    margin: 0;
+}
