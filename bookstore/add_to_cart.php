@@ -1,7 +1,9 @@
 <?php
 // Підключення до бази даних
 include('includes/db.php');
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Перевірка, чи передано параметр book_id через POST
 if (isset($_POST['book_id']) && is_numeric($_POST['book_id'])) {
@@ -19,10 +21,12 @@ if (isset($_POST['book_id']) && is_numeric($_POST['book_id'])) {
             $_SESSION['cart'] = [];
         }
 
-        // Додаємо книгу до кошика, якщо її ще немає
+        // Перевірка, чи книга вже є в кошику
         $is_book_in_cart = false;
-        foreach ($_SESSION['cart'] as $item) {
-            if ($item['id'] == $book_id) {
+        foreach ($_SESSION['cart'] as $item_key => $item_value) {
+            if ($item_value['id'] == $book_id) {
+                // Тут можна додати логіку збільшення кількості, якщо потрібно
+                // Наприклад: $_SESSION['cart'][$item_key]['quantity'] += 1;
                 $is_book_in_cart = true;
                 break;
             }
@@ -34,15 +38,26 @@ if (isset($_POST['book_id']) && is_numeric($_POST['book_id'])) {
                 'title' => $book['title'],
                 'author' => $book['author'],
                 'price' => $book['price'],
-                'image' => $book['image']
+                'image' => $book['image'],
+                'quantity' => 1 // Додаємо кількість
             ];
-
-            // Перенаправлення на сторінку кошика
-            header("Location: cart.php");
+            // Повернення на попередню сторінку з повідомленням про успіх
+            $redirect_url = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'catalog.php';
+            // Додаємо параметр до URL, щоб уникнути кешування та показати повідомлення
+            if (strpos($redirect_url, '?') !== false) {
+                header("Location: " . $redirect_url . "&message_cart=Книгу додано до кошика!");
+            } else {
+                header("Location: " . $redirect_url . "?message_cart=Книгу додано до кошика!");
+            }
             exit();
         } else {
             // Якщо книга вже в кошику, перенаправляємо назад з повідомленням
-            header("Location: catalog.php?message=Книга вже в кошику");
+            $redirect_url = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'catalog.php';
+            if (strpos($redirect_url, '?') !== false) {
+                header("Location: " . $redirect_url . "&message_cart=Книга вже є у вашому кошику.");
+            } else {
+                header("Location: " . $redirect_url . "?message_cart=Книга вже є у вашому кошику.");
+            }
             exit();
         }
     } else {

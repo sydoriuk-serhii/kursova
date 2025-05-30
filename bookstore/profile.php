@@ -1,10 +1,9 @@
 <?php
-// Підключення до бази даних
+// session_start(); // Вже в header.php
 include('includes/db.php');
 
 // Перевірка, чи користувач увійшов в систему
-session_start();
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] === 'admin') { // Адміна перенаправляємо в адмін-панель
     header("Location: login.php");
     exit;
 }
@@ -12,91 +11,46 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Отримання даних профілю користувача
-$query = "SELECT * FROM users WHERE id = '$user_id'";
-$result = mysqli_query($conn, $query);
-$user = mysqli_fetch_assoc($result);
+$query_user = $conn->prepare("SELECT id, username, email, created_at FROM users WHERE id = ?");
+$query_user->bind_param("i", $user_id);
+$query_user->execute();
+$result_user = $query_user->get_result();
 
-// Отримання замовлень користувача
-$query_orders = "SELECT * FROM orders WHERE user_id = '$user_id' ORDER BY order_date DESC";
-$result_orders = mysqli_query($conn, $query_orders);
+if ($result_user->num_rows > 0) {
+    $user = $result_user->fetch_assoc();
+} else {
+    // Малоймовірно, якщо сесія існує, але про всяк випадок
+    session_destroy();
+    header("Location: login.php?message=Помилка профілю, увійдіть знову.");
+    exit;
+}
+$query_user->close();
 
-// Закриття з'єднання
-mysqli_close($conn);
+
+$page_title = "Профіль: " . htmlspecialchars($user['username']);
+include('includes/header.php');
 ?>
+    <link rel="stylesheet" href="css/profile.css"> <div style="text-align: center; margin-bottom: 20px;">
+    <button onclick="history.back()" class="btn-back" style="padding: 10px 15px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Назад</button>
+</div>
 
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профіль користувача</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/profile.css">
-</head>
-<body>
-
-    <!-- Шапка сайту -->
-    <header>
-        <h1>Інтернет-магазин книг</h1>
-        <nav>
-            <ul>
-                <li><a href="index.php">Головна</a></li>
-                <li><a href="catalog.php">Каталог книг</a></li>
-                <li><a href="profile.php">Мій профіль</a></li>
-                <li><a href="logout.php">Вихід</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <!-- Основний контент -->
-    <main>
-        <section class="profile-section">
-            <h2>Мій профіль</h2>
-            <div class="profile-details">
-                <div class="profile-avatar">
-                    <img src="uploads/<?php echo $user['image']; ?>" alt="Avatar">
-                </div>
-                <div class="profile-info">
-                    <h3><?php echo $user['username']; ?></h3>
-                    <p><strong>Електронна пошта:</strong> <?php echo $user['email']; ?></p>
-                    <p><strong>Вік:</strong> <?php echo $user['age']; ?></p>
-                    <p><strong>Біографія:</strong> <?php echo $user['bio']; ?></p>
-                </div>
-                <a href="edit_profile.php" class="edit-profile-button">Редагувати профіль</a>
+    <section class="profile-section">
+        <h2>Мій профіль</h2>
+        <div class="profile-details">
+            <div class="profile-info">
+                <h3>Ласкаво просимо, <?php echo htmlspecialchars($user['username']); ?>!</h3>
+                <p><strong>ID користувача:</strong> <?php echo $user['id']; ?></p>
+                <p><strong>Електронна пошта:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
+                <p><strong>Дата реєстрації:</strong> <?php echo date("d.m.Y H:i", strtotime($user['created_at'])); ?></p>
             </div>
+        </div>
 
-            <h3>Мої замовлення</h3>
-            <?php if (mysqli_num_rows($result_orders) > 0): ?>
-                <table class="orders-table">
-                    <thead>
-                        <tr>
-                            <th>Номер замовлення</th>
-                            <th>Дата замовлення</th>
-                            <th>Статус</th>
-                            <th>Сума</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($order = mysqli_fetch_assoc($result_orders)): ?>
-                            <tr>
-                                <td>#<?php echo $order['order_id']; ?></td>
-                                <td><?php echo $order['order_date']; ?></td>
-                                <td><?php echo $order['status']; ?></td>
-                                <td><?php echo $order['total_price']; ?> грн</td>
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            <?php else: ?>
-                <p>У вас ще немає замовлень.</p>
-            <?php endif; ?>
-        </section>
-    </main>
+        <h3 style="margin-top: 30px;">Історія моїх замовлень</h3>
+        <p>Переглянути деталі ваших замовлень можна на сторінці <a href="order.php">"Мої замовлення"</a>.</p>
 
-    <!-- Футер -->
-    <footer>
-        <p>&copy; 2025 Інтернет-магазин книг</p>
-    </footer>
+    </section>
 
-</body>
-</html>
+<?php
+mysqli_close($conn);
+include('includes/footer.php');
+?>
