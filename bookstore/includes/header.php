@@ -1,18 +1,22 @@
 ﻿<?php
+include('includes/db.php');
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
+    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : "Інтернет-магазин книг"; ?></title>
+    <link rel="stylesheet" href="css/style.css"> <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 <header>
-    <h1><a href="index.php" style="color: white; text-decoration: none;">Інтернет-магазин книг</a></h1>
+    <h1><a href="index.php" class="site-title-link">Інтернет-магазин книг</a></h1>
     <nav>
         <ul>
             <li><a href="index.php">Головна</a></li>
@@ -34,4 +38,4 @@ if (session_status() == PHP_SESSION_NONE) {
         </ul>
     </nav>
 </header>
-<main>
+<main class="site-main-content">

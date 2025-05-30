@@ -1,6 +1,7 @@
 <?php
 // Підключення до бази даних
 include('includes/db.php');
+include_once('includes/header.php');
 
 // Перевірка, чи передано параметр id книги через URL
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {

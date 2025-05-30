@@ -1,7 +1,7 @@
 <?php
 // session_start(); // Вже в header.php
-include('includes/db.php');
-
+include_once('includes/db.php');
+include_once('includes/header.php');
 // Функція обчислення загальної суми
 function calculateTotal() {
     $total = 0;

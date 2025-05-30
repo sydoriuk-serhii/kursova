@@ -1,6 +1,7 @@
 <?php
 // session_start(); // Вже в header.php
-include('includes/db.php');
+include_once('includes/db.php');
+include_once('includes/header.php');
 
 // Перевірка, чи користувач увійшов в систему
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] === 'admin') { // Адміна перенаправляємо в адмін-панель

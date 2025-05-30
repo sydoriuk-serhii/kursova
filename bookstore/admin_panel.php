@@ -1,12 +1,16 @@
 <?php
 // session_start(); // Вже в header.php
-include('includes/db.php');
+include_once('includes/db.php');
 
 // Якщо не авторизований або не адміністратор — перенаправити на login
+if (session_status() == PHP_SESSION_NONE) { // Переконуємось, що сесія активна для перевірки
+    session_start();
+}
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit;
 }
+include_once('includes/header.php'); // header.php підключає css/style.css
 
 // Повідомлення після успішного додавання/видалення
 $message = '';

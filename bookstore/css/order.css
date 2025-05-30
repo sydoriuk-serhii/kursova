@@ -1,100 +1,77 @@
-/* Основной стиль страницы */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
-
-/* Заголовок страницы */
-header {
-    background-color: #007bff;
-    color: white;
-    padding: 20px;
+/* css/order.css */
+.order-title-container { /* Додав контейнер для h2 */
     text-align: center;
+    margin-bottom: 30px;
 }
 
-header h1 {
-    margin: 0;
-}
-
-/* Навигация */
-nav {
-    margin-top: 10px;
-    text-align: center;
-}
-
-nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 15px;
-    font-size: 16px;
-}
-
-nav a:hover {
-    text-decoration: underline;
-}
-
-/* Основной контейнер */
-main {
+.orders-table-container { /* Контейнер для таблиці, щоб можна було додати overflow */
+    overflow-x: auto; /* Горизонтальний скрол для таблиці на малих екранах */
+    background-color: #fff;
     padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Стили для таблицы заказов */
-.orders-table {
-    width: 100%;
-    border-collapse: collapse;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
     margin-top: 20px;
 }
 
-.orders-table th, .orders-table td {
-    padding: 12px 15px;
+.orders-table {
+    width: 100%;
+    border-collapse: collapse; /* Забираємо подвійні лінії */
+    margin: 0; /* Скидаємо дефолтний margin таблиці */
+    font-size: 0.95em; /* Трохи менший шрифт для таблиці */
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 12px 15px; /* Збільшив padding */
     text-align: left;
-    border: 1px solid #ddd;
+    border-bottom: 1px solid #dee2e6; /* Тільки нижня межа для рядків */
 }
 
 .orders-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+    background-color: #f8f9fa; /* Світлий фон для заголовків */
+    color: #495057;
+    font-weight: 500; /* Напівжирний для заголовків */
+    text-transform: uppercase; /* Великі літери для заголовків */
+    font-size: 0.85em; /* Менший шрифт для заголовків */
+    letter-spacing: 0.5px;
 }
 
-.orders-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+.orders-table tbody tr:hover {
+    background-color: #f1f3f5; /* Підсвічування рядка при наведенні */
 }
 
-.orders-table tr:hover {
-    background-color: #f1f1f1;
+.orders-table td ul { /* Для списку товарів у замовленні */
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+.orders-table td ul li {
+    font-size: 0.9em;
+    padding: 3px 0;
+    color: #6c757d;
 }
 
-/* Ссылки на удаление заказов */
-.orders-table a {
-    color: red;
+.orders-table .delete-link {
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 5px 8px; /* Клікабельна область */
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.orders-table .delete-link:hover {
+    color: #fff;
+    background-color: #dc3545;
     text-decoration: none;
 }
 
-.orders-table a:hover {
-    text-decoration: underline;
-}
-
-/* Сообщение, если нет заказов */
-main p {
-    font-size: 18px;
-    color: #555;
+.no-orders-message { /* Для повідомлення "У вас поки немає замовлень." */
     text-align: center;
-}
-
-/* Подвал */
-footer {
-    text-align: center;
-    background-color: #007bff;
-    color: white;
-    padding: 15px;
-    margin-top: 30px;
-}
-
-footer p {
-    margin: 0;
+    font-size: 1.1em;
+    color: #6c757d;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    margin-top: 20px;
 }

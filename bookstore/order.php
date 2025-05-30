@@ -1,8 +1,7 @@
 <?php
-// session_start(); // Вже в header.php
-include('includes/db.php');
 
-// Перевірка входу та ролі
+include_once('includes/db.php');
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;

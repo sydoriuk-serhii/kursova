@@ -1,85 +1,81 @@
-/* Общие стили */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f7fc;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
-
-header {
-    background-color: #007bff;
-    color: white;
+/* css/checkout.css */
+.checkout-title-container { /* Додав контейнер для h2 */
     text-align: center;
-    padding: 20px;
+    margin-bottom: 30px;
 }
 
-h1 {
-    margin: 0;
-    font-size: 2.5rem;
-}
-
-main {
-    max-width: 800px;
+.checkout-form-container { /* Загальний контейнер для форми */
+    max-width: 750px;
     margin: 20px auto;
+    padding: 30px 35px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+}
+
+.checkout-form h2 { /* Заголовок всередині форми (якщо є) */
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 500;
+    color: #343a40;
+    margin-bottom: 25px;
+}
+/* Стилі для label, input, textarea, button успадковуються з style.css */
+
+.order-summary {
+    margin-top: 30px;
     padding: 20px;
-    background-color: white;
+    background-color: #f8f9fa; /* Світлий фон для секції */
+    border: 1px solid #e9ecef;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-.checkout-form {
-    display: flex;
-    flex-direction: column;
-}
-
-.checkout-form label {
-    font-size: 1.2rem;
-    margin-bottom: 5px;
-}
-
-.checkout-form input,
-.checkout-form textarea {
-    font-size: 1rem;
-    padding: 10px;
+.order-summary h3 {
+    font-size: 1.3em;
+    font-weight: 500;
+    color: #343a40;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    transition: border-color 0.3s;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+.order-summary ul {
+    list-style-type: none; /* Прибираємо маркери списку */
+    padding-left: 0;
+}
+.order-summary ul li {
+    font-size: 0.95em;
+    color: #495057;
+    margin-bottom: 8px;
+    padding: 5px 0;
+    display: flex; /* Для кращого вирівнювання */
+    justify-content: space-between; /* Назва товару зліва, ціна справа */
+}
+.order-summary p strong { /* Загальна сума */
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #007bff; /* Акцент на загальній сумі */
 }
 
-.checkout-form input:focus,
-.checkout-form textarea:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.checkout-form button {
-    font-size: 1.1rem;
-    padding: 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.checkout-form button:hover {
-    background-color: #0056b3;
-}
-
-.success-message {
-    color: green;
-    font-size: 1.2rem;
-    margin: 20px 0;
-    text-align: center;
-}
-
-footer {
-    text-align: center;
+.checkout-form button[type="submit"] {
+    width: 100%; /* Кнопка на всю ширину */
+    padding: 15px; /* Більша кнопка */
+    font-size: 1.1em;
     margin-top: 20px;
-    font-size: 1rem;
-    color: #777;
+}
+
+/* Кнопки "Назад" та "До кошика" */
+.checkout-navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.checkout-navigation-buttons .btn-back,
+.checkout-navigation-buttons .btn-to-cart {
+    padding: 10px 20px;
+    font-size: 0.95em;
+    background-color: #6c757d;
+    /* Успадковують інші стилі кнопок */
+}
+.checkout-navigation-buttons .btn-back:hover,
+.checkout-navigation-buttons .btn-to-cart:hover {
+    background-color: #5a6268;
 }

@@ -1,7 +1,7 @@
 <?php
 // session_start(); // Вже в header.php
-include('includes/db.php');
-
+include_once('includes/db.php');
+include_once('includes/header.php');
 // Якщо користувач вже авторизований, перенаправити його
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] === 'admin') {

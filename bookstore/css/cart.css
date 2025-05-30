@@ -1,162 +1,150 @@
-/* Загальні стилі для сторінки */
-body {
-    font-family: 'Helvetica', sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-}
-
-/* Шапка сайту */
-header {
-    background-color: #007bff;
-    color: white;
-    padding: 20px 0;
+/* css/cart.css */
+.cart-section-title { /* Додав контейнер для h2 */
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 24px;
-}
-
-header nav ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 10px;
-}
-
-header nav ul li {
-    display: inline;
-    margin-right: 20px;
-}
-
-header nav ul li a {
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    text-transform: uppercase;
-    transition: color 0.3s ease;
-}
-
-header nav ul li a:hover {
-    color: #ffb84d;
-}
-
-/* Основний контент */
-main {
-    padding: 40px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Стилі для кошика */
 .cart {
-    background-color: white;
-    padding: 30px;
+    background-color: #fff;
+    padding: 25px 30px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.cart h2 {
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+    max-width: 900px; /* Обмеження ширини кошика */
+    margin: 20px auto;
 }
 
 .cart-items {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    margin-bottom: 30px;
 }
 
 .cart-item {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap; /* Для адаптивності */
+    align-items: flex-start; /* Вирівнювання по верху */
+    padding: 20px 0;
+    border-bottom: 1px solid #e9ecef; /* Розділювач між товарами */
+    gap: 20px;
+}
+.cart-item:last-child {
+    border-bottom: none;
 }
 
 .cart-item-image {
-    flex: 0 0 150px;
-    max-width: 150px;
+    flex: 0 0 120px; /* Фіксована ширина для зображення */
+    max-width: 120px;
 }
-
 .cart-item-image img {
     width: 100%;
     height: auto;
-    border-radius: 8px;
-    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #eee;
 }
 
 .cart-item-info {
-    flex: 1;
-    margin-left: 20px;
+    flex: 1 1 300px; /* Займає решту місця */
 }
 
 .cart-item-info h3 {
-    font-size: 22px;
-    color: #333;
+    font-size: 1.25em;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+.cart-item-info h3 a {
+    color: #343a40;
+    text-decoration: none;
+}
+.cart-item-info h3 a:hover {
+    color: #007bff;
 }
 
 .cart-item-info p {
-    font-size: 16px;
-    color: #777;
+    font-size: 0.95em;
+    color: #6c757d;
+    margin-bottom: 6px;
+}
+
+.update-quantity-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+.update-quantity-form label {
+    margin-bottom: 0; /* Скидання для label в формі */
+    font-size: 0.9em;
+}
+.update-quantity-form input[type="number"] {
+    width: 70px;
+    padding: 8px;
+    margin-bottom: 0; /* Скидання */
+    font-size: 0.95em;
+}
+.btn-update-quantity {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    background-color: #6c757d; /* Сіра кнопка для оновлення */
+    /* Успадковує загальні стилі для кнопок */
+}
+.btn-update-quantity:hover {
+    background-color: #5a6268;
 }
 
 .remove-item {
-    color: #ff4d4d;
+    color: #dc3545; /* Червоний для видалення */
     text-decoration: none;
-    font-weight: bold;
-    margin-top: 10px;
+    font-weight: 500;
+    font-size: 0.9em;
     display: inline-block;
+    margin-top: 10px;
+    padding: 5px 0; /* Зробити клікабельну область більшою */
 }
-
 .remove-item:hover {
     text-decoration: underline;
 }
 
-/* Загальна сума */
 .cart-total {
-    margin-top: 30px;
-    font-size: 22px;
-    font-weight: bold;
-    color: #333;
+    text-align: right; /* Загальна сума справа */
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #007bff; /* Акцентна лінія над сумою */
+}
+.cart-total h3 {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #343a40;
 }
 
-/* Кнопки */
 .cart-actions {
     margin-top: 30px;
     display: flex;
-    gap: 20px;
+    justify-content: space-between; /* Кнопки по краях */
+    flex-wrap: wrap; /* Для адаптивності */
+    gap: 15px;
 }
-
-.btn-checkout,
+/* .btn-checkout та .btn-continue успадковують стилі з style.css */
 .btn-continue {
-    display: inline-block;
-    padding: 12px 25px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    text-align: center;
-    transition: background-color 0.3s ease;
+    background-color: #6c757d; /* Інший колір для "Продовжити покупки" */
 }
-
-.btn-checkout:hover,
 .btn-continue:hover {
-    background-color: #0056b3;
+    background-color: #5a6268;
 }
 
-/* Футер */
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    margin-top: 40px;
+@media (max-width: 576px) {
+    .cart-item {
+        flex-direction: column; /* Елементи один під одним */
+        align-items: center;
+        text-align: center;
+    }
+    .cart-item-image {
+        margin-bottom: 15px;
+    }
+    .update-quantity-form {
+        justify-content: center;
+    }
+    .cart-actions {
+        flex-direction: column;
+    }
+    .cart-actions .btn-checkout, .cart-actions .btn-continue {
+        width: 100%; /* Кнопки на всю ширину */
+    }
 }

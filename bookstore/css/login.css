@@ -1,106 +1,45 @@
-/* Загальні стилі для тіла */
-body {
-    font-family: 'Helvetica', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
+/* css/login.css */
 
-/* Шапка сайту */
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-}
-
-header h1 {
-    margin: 0;
-    font-size: 24px;
-}
-
-/* Навігація */
-nav ul {
-    list-style-type: none;
-    padding: 0;
-    text-align: center;
-}
-
-nav ul li {
-    display: inline-block;
-    margin: 0 15px;
-}
-
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 18px;
-}
-
-/* Форма входу */
-.login-form {
-    max-width: 400px;
+.login-form-container {
+    max-width: 480px; /* Трохи ширше для комфорту */
     margin: 50px auto;
-    padding: 20px;
+    padding: 30px 35px; /* Більше відступів всередині */
     background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    border-radius: 10px; /* Більш заокруглені кути */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Виразніша тінь */
+    text-align: center; /* Центрування тексту та посилань */
 }
 
-.login-form h2 {
-    text-align: center;
-    margin-bottom: 20px;
+.login-form-container h2 {
+    margin-bottom: 25px;
+    font-size: 1.6em; /* Збільшений заголовок */
+    color: #343a40;
+    font-weight: 500;
 }
 
-.login-form label {
-    font-size: 14px;
-    margin-bottom: 5px;
-    display: block;
-    color: #333;
+/* Стилі для label, input, button[type="submit"] успадковуються з style.css */
+/* Можна додати специфічні відступи, якщо потрібно */
+.login-form-content label {
+    text-align: left; /* Вирівнювання тексту міток по лівому краю */
 }
 
-.login-form input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
+.login-form-content button[type="submit"] {
+    margin-top: 10px; /* Додатковий відступ для кнопки */
+    width: 100%; /* Кнопка на всю ширину */
 }
 
-.login-form input[type="text"],
-.login-form input[type="password"] {
-    box-sizing: border-box;
+.login-form-container p {
+    margin-top: 20px;
+    font-size: 0.95em;
+    color: #6c757d;
 }
 
-.login-form button {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
+.login-form-container p a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
 }
 
-.login-form button:hover {
-    background-color: #0056b3;
-}
-
-/* Повідомлення про помилки */
-.error-message {
-    color: red;
-    font-size: 14px;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-/* Футер */
-footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #333;
-    color: #fff;
-    margin-top: 50px;
+.login-form-container p a:hover {
+    text-decoration: underline;
 }

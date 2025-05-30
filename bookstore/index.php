@@ -1,7 +1,7 @@
 <?php
 // Підключення до бази даних
-include('includes/db.php');
-
+include_once('includes/db.php');
+include_once('includes/header.php');
 // Отримання всіх книг з бази даних
 $query = "SELECT * FROM books ORDER BY created_at DESC LIMIT 10"; // Покажемо останні 10 книг
 $result = mysqli_query($conn, $query);

@@ -1,7 +1,7 @@
 <?php
 // Підключення до бази даних
-include('includes/db.php');
-// session_start(); // Вже в header.php
+include_once('includes/db.php');
+include_once('includes/header.php');
 
 // Перевірка, чи є кошик в сесії
 if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {

@@ -1,127 +1,50 @@
-/* Загальні стилі для сторінки каталогу */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
+/* css/catalog.css */
 
-header {
-    background-color: #333;
-    color: white;
-    padding: 15px 20px;
-    text-align: center;
-}
-
-header h1 {
-    margin: 0;
-}
-
-header a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    margin-top: 10px;
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007bff;
-    border-radius: 5px;
-}
-
-header a:hover {
-    background-color: #0056b3;
-}
-
-/* Основний контент */
-main {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.message {
-    color: green;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-.book-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: space-between;
-}
-
-.book-item {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 22%;
-    padding: 20px;
-    box-sizing: border-box;
-    transition: transform 0.3s ease;
-}
-
-.book-item:hover {
-    transform: translateY(-5px);
-}
-
-.book-item img {
-    max-width: 100%;
-    border-radius: 8px;
-}
-
-.book-item h3 {
-    font-size: 1.2em;
-    margin: 10px 0;
-}
-
-.book-item p {
-    font-size: 0.9em;
-    margin: 5px 0;
-}
-
-.book-item button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s;
-}
-
-.book-item button:hover {
-    background-color: #0056b3;
-}
-
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-}
 .filter-form {
-    margin: 20px auto;
-    text-align: center;
-    font-family: Helvetica, sans-serif;
-    font-size: 14px;
+    display: flex; /* Розташування елементів в ряд */
+    flex-wrap: wrap; /* Перенос на новий рядок при необхідності */
+    justify-content: center; /* Центрування форми */
+    align-items: center; /* Вертикальне вирівнювання */
+    gap: 15px; /* Відстань між елементами */
+    padding: 20px;
+    margin: 0 auto 30px auto; /* Відступи та центрування */
+    background-color: #fff; /* Фон для форми */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    max-width: 900px; /* Обмеження ширини форми */
+}
+
+.filter-form label {
+    margin-bottom: 0; /* Скидання дефолтного margin, якщо є */
+    font-weight: 500;
+    color: #495057;
 }
 
 .filter-form select {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    padding: 10px 15px; /* Збільшив padding для select */
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 0.95em;
+    min-width: 180px; /* Мінімальна ширина для select */
+    margin-bottom: 0; /* Скидання */
 }
 
 .filter-form select:hover {
-    background-color: #e6e6e6;
+    border-color: #adb5bd;
+}
+
+.reset-filters-link {
+    color: #dc3545; /* Червоний для "скинути" */
+    text-decoration: none;
+    font-weight: 500;
+    padding: 10px 15px;
+    border: 1px solid #dc3545;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.reset-filters-link:hover {
+    background-color: #dc3545;
+    color: #fff;
 }
