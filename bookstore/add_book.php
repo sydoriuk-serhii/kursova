@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
+
 // Перевірка, чи була надіслана форма
 if (isset($_POST['submit'])) {
     // Отримання даних із форми
