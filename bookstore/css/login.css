@@ -1,45 +1,24 @@
 /* css/login.css */
+/* Всі основні стилі для .auth-form-container, форм, кнопок, посилань тепер у style.css */
 
-.login-form-container {
-    max-width: 480px; /* Трохи ширше для комфорту */
-    margin: 50px auto;
-    padding: 30px 35px; /* Більше відступів всередині */
-    background-color: #fff;
-    border-radius: 10px; /* Більш заокруглені кути */
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Виразніша тінь */
-    text-align: center; /* Центрування тексту та посилань */
+/* Якщо потрібні дуже дрібні специфічні коригування для .auth-form-container на цій сторінці: */
+/* .auth-form-container.login-page-specific { ... } */
+
+.auth-form-content label { /* Якщо потрібен відступ, відмінний від загального */
+    /* margin-top: 10px; -- вже є в style.css .info-grid p (якщо застосовується) або в .auth-form-container label (якщо додати) */
 }
 
-.login-form-container h2 {
-    margin-bottom: 25px;
-    font-size: 1.6em; /* Збільшений заголовок */
-    color: #343a40;
-    font-weight: 500;
-}
-
-/* Стилі для label, input, button[type="submit"] успадковуються з style.css */
-/* Можна додати специфічні відступи, якщо потрібно */
-.login-form-content label {
-    text-align: left; /* Вирівнювання тексту міток по лівому краю */
-}
-
-.login-form-content button[type="submit"] {
-    margin-top: 10px; /* Додатковий відступ для кнопки */
-    width: 100%; /* Кнопка на всю ширину */
-}
-
-.login-form-container p {
-    margin-top: 20px;
+.auth-form-container p.alternate-action-link { /* Для "Ще не маєте акаунту?" */
+    margin-top: 25px;
     font-size: 0.95em;
     color: #6c757d;
+    text-align: center;
 }
-
-.login-form-container p a {
+.auth-form-container p.alternate-action-link a {
     color: #007bff;
     text-decoration: none;
     font-weight: 500;
 }
-
-.login-form-container p a:hover {
+.auth-form-container p.alternate-action-link a:hover {
     text-decoration: underline;
 }

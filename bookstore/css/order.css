@@ -1,77 +1,19 @@
 /* css/order.css */
-.order-title-container { /* Додав контейнер для h2 */
+/* Всі основні стилі для .data-table-container, .data-table, .action-link-danger, .no-items-info тепер у style.css */
+
+/* Якщо заголовок "Ваші замовлення" має унікальний стиль, відмінний від .section-title-container: */
+.user-orders-title-container {
     text-align: center;
     margin-bottom: 30px;
 }
-
-.orders-table-container { /* Контейнер для таблиці, щоб можна було додати overflow */
-    overflow-x: auto; /* Горизонтальний скрол для таблиці на малих екранах */
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-    margin-top: 20px;
-}
-
-.orders-table {
-    width: 100%;
-    border-collapse: collapse; /* Забираємо подвійні лінії */
-    margin: 0; /* Скидаємо дефолтний margin таблиці */
-    font-size: 0.95em; /* Трохи менший шрифт для таблиці */
-}
-
-.orders-table th,
-.orders-table td {
-    padding: 12px 15px; /* Збільшив padding */
-    text-align: left;
-    border-bottom: 1px solid #dee2e6; /* Тільки нижня межа для рядків */
-}
-
-.orders-table th {
-    background-color: #f8f9fa; /* Світлий фон для заголовків */
-    color: #495057;
-    font-weight: 500; /* Напівжирний для заголовків */
-    text-transform: uppercase; /* Великі літери для заголовків */
-    font-size: 0.85em; /* Менший шрифт для заголовків */
-    letter-spacing: 0.5px;
-}
-
-.orders-table tbody tr:hover {
-    background-color: #f1f3f5; /* Підсвічування рядка при наведенні */
-}
-
-.orders-table td ul { /* Для списку товарів у замовленні */
-    list-style-type: none;
-    padding-left: 0;
-    margin: 0;
-}
-.orders-table td ul li {
-    font-size: 0.9em;
-    padding: 3px 0;
-    color: #6c757d;
-}
-
-.orders-table .delete-link {
-    color: #dc3545;
-    text-decoration: none;
+.user-orders-title-container h2 {
+    font-size: 1.8em;
+    color: #343a40;
     font-weight: 500;
-    padding: 5px 8px; /* Клікабельна область */
-    border-radius: 4px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-.orders-table .delete-link:hover {
-    color: #fff;
-    background-color: #dc3545;
-    text-decoration: none;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+    display: inline-block;
 }
 
-.no-orders-message { /* Для повідомлення "У вас поки немає замовлень." */
-    text-align: center;
-    font-size: 1.1em;
-    color: #6c757d;
-    padding: 30px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-    margin-top: 20px;
-}
+/* Якщо потрібні специфічні налаштування для таблиці замовлень користувача: */
+/* .data-table.user-orders-table { ... } */

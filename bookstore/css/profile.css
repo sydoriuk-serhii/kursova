@@ -1,65 +1,49 @@
 /* css/profile.css */
-.profile-title-container { /* Додав контейнер для h2 */
-    text-align: center;
-    margin-bottom: 30px;
-}
-.profile-section {
+/* .panel-container та .info-grid (для відображення даних) тепер у style.css */
+
+.profile-custom-panel { /* Модифікатор для .panel-container */
     max-width: 800px;
-    margin: 20px auto;
-    padding: 30px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.07);
 }
 
-.profile-details {
-    /* Можна додати display: flex, якщо планується аватар та інфо поруч */
+.profile-details-separator { /* Блок з деталями та розділювачем */
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.profile-welcome-message { /* "Ласкаво просимо..." */
+    font-size: 1.8em;
+    font-weight: 500;
+    color: #007bff; /* Синій акцент */
     margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #e9ecef;
+    text-align: center;
 }
 
-.profile-info h3 {
-    font-size: 1.6em;
+/* .info-grid p та .info-grid p strong стилізуються в style.css */
+/* Якщо для профілю потрібні інші відступи для strong: */
+.profile-custom-panel .info-grid p strong {
+    min-width: 200px; /* Налаштуйте для кращого вигляду */
+}
+
+.profile-section-subtitle { /* Для "Історія моїх замовлень" */
+    font-size: 1.5em;
     font-weight: 500;
     color: #343a40;
-    margin-bottom: 20px;
-}
-
-.profile-info p {
-    font-size: 1.05em;
-    color: #495057;
-    margin-bottom: 10px;
-    line-height: 1.7;
-}
-.profile-info p strong {
-    color: #212529;
-    min-width: 180px; /* Для вирівнювання, якщо значення короткі */
-    display: inline-block;
-}
-
-.profile-section h3 { /* Для заголовка "Історія моїх замовлень" */
-    font-size: 1.4em;
-    font-weight: 500;
-    color: #343a40;
-    margin-top: 30px;
+    margin-top: 35px;
     margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #ced4da; /* Пунктирний розділювач */
 }
-.profile-section p a { /* Для посилання на сторінку "Мої замовлення" */
+
+.profile-custom-panel p.profile-action-link a { /* Посилання "Мої замовлення" */
     color: #007bff;
     text-decoration: none;
     font-weight: 500;
+    font-size: 1.05em;
 }
-.profile-section p a:hover {
+.profile-custom-panel p.profile-action-link a:hover {
     text-decoration: underline;
+    color: #0056b3;
 }
 
-/* Кнопка "Редагувати профіль", якщо буде */
-.edit-profile-button {
-    /* Використовує загальні стилі .btn-generic або button[type="submit"] */
-    background-color: #17a2b8; /* Бірюзовий для редагування */
-    margin-top: 20px;
-}
-.edit-profile-button:hover {
-    background-color: #138496;
-}
+/* Якщо буде кнопка "Редагувати профіль" - використовуйте .btn-generic.btn-secondary або .btn-primary */

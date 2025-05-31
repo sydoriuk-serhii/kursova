@@ -1,43 +1,24 @@
-/* css/register.css */
+/* css/login.css */
+/* Всі основні стилі для .auth-form-container, форм, кнопок, посилань тепер у style.css */
 
-.register-form-container {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 30px 35px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    text-align: center;
+/* Якщо потрібні дуже дрібні специфічні коригування для .auth-form-container на цій сторінці: */
+/* .auth-form-container.login-page-specific { ... } */
+
+.auth-form-content label { /* Якщо потрібен відступ, відмінний від загального */
+    /* margin-top: 10px; -- вже є в style.css .info-grid p (якщо застосовується) або в .auth-form-container label (якщо додати) */
 }
 
-.register-form-container h2 {
-    margin-bottom: 25px;
-    font-size: 1.6em;
-    color: #343a40;
-    font-weight: 500;
-}
-
-.register-form-content label {
-    text-align: left;
-}
-
-.register-form-content button[type="submit"] {
-    margin-top: 10px;
-    width: 100%;
-}
-
-.register-form-container p {
-    margin-top: 20px;
+.auth-form-container p.alternate-action-link { /* Для "Ще не маєте акаунту?" */
+    margin-top: 25px;
     font-size: 0.95em;
     color: #6c757d;
+    text-align: center;
 }
-
-.register-form-container p a {
+.auth-form-container p.alternate-action-link a {
     color: #007bff;
     text-decoration: none;
     font-weight: 500;
 }
-
-.register-form-container p a:hover {
+.auth-form-container p.alternate-action-link a:hover {
     text-decoration: underline;
 }

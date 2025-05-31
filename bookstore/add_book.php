@@ -1,6 +1,9 @@
 <?php
-session_start(); // Потрібно для перевірки сесії
-include('includes/db.php');
+// Файл: add_book.php
+if (session_status() == PHP_SESSION_NONE) { // Переконуємось, що сесія активна
+    session_start();
+}
+include_once('includes/db.php'); // Використовуємо include_once
 
 // Якщо не авторизований або не адміністратор — перенаправити на login
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -8,23 +11,26 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-$error_message = '';
-$success_message = '';
+// Ініціалізуємо змінні для повідомлень за замовчуванням, хоча тут вони використовуються лише для редиректу
+// $error_message = '';
+// $success_message = ''; // Не використовується для прямого виводу тут
 
 // Перевірка, чи була надіслана форма
 if (isset($_POST['submit'])) {
     // Отримання даних із форми
-    $title = mysqli_real_escape_string($conn, trim($_POST['title']));
-    $author = mysqli_real_escape_string($conn, trim($_POST['author']));
-    $description = mysqli_real_escape_string($conn, trim($_POST['description']));
-    $genre = mysqli_real_escape_string($conn, trim($_POST['genre']));
-    $price = mysqli_real_escape_string($conn, $_POST['price']);
+    $title = trim($_POST['title']); // mysqli_real_escape_string не потрібен при використанні prepare
+    $author = trim($_POST['author']);
+    $description = trim($_POST['description']);
+    $genre = trim($_POST['genre']);
+    $price = $_POST['price']; // Валідація is_numeric буде нижче
+
+    $current_error = ''; // Локальна змінна для помилок у цьому блоці
 
     // Валідація даних
     if (empty($title) || empty($author) || empty($description) || empty($genre) || !is_numeric($price) || $price < 0) {
-        $error_message = "Будь ласка, заповніть усі поля коректно.";
+        $current_error = "Будь ласка, заповніть усі поля коректно. Ціна має бути числом не менше 0.";
     } elseif (empty($_FILES['image']['name'])) {
-        $error_message = "Будь ласка, виберіть зображення для книги.";
+        $current_error = "Будь ласка, виберіть зображення для книги.";
     } else {
         // Обробка зображення
         $image = $_FILES['image'];
@@ -33,64 +39,73 @@ if (isset($_POST['submit'])) {
         $image_size = $image['size'];
         $image_error = $image['error'];
 
-        // Перевірка на помилки при завантаженні зображення
         if ($image_error === 0) {
             if ($image_size < 5000000) { // Максимальний розмір 5MB
-                $image_info = getimagesize($image_tmp_name);
-                $image_ext_actual = image_type_to_extension($image_info[2], false); // отримуємо розширення з mime типу
-                $allowed_extensions = ['jpg', 'jpeg', 'png'];
+                $image_info = @getimagesize($image_tmp_name); // @ пригнічує помилку, якщо файл не зображення
+                if ($image_info) {
+                    $image_ext_actual = image_type_to_extension($image_info[2], false);
+                    $allowed_extensions = ['jpg', 'jpeg', 'png'];
 
-                if ($image_info && in_array(strtolower($image_ext_actual), $allowed_extensions)) {
-                    // Генерація унікальної назви для зображення
-                    $new_image_name = uniqid('book_', true) . '.' . $image_ext_actual;
-                    $image_destination_folder = 'uploads/'; // Переконайтеся, що папка існує і доступна для запису
+                    if (in_array(strtolower($image_ext_actual), $allowed_extensions)) {
+                        $new_image_name = uniqid('book_', true) . '.' . $image_ext_actual;
+                        $image_destination_folder = 'uploads/';
 
-                    if (!is_dir($image_destination_folder)) {
-                        mkdir($image_destination_folder, 0777, true);
-                    }
-                    $image_destination_path = $image_destination_folder . $new_image_name;
-
-                    // Переміщення зображення до каталогу
-                    if (move_uploaded_file($image_tmp_name, $image_destination_path)) {
-                        // Додавання книги в базу даних
-                        $insert_query = $conn->prepare("INSERT INTO books (title, author, description, genre, price, image, created_at) 
-                                         VALUES (?, ?, ?, ?, ?, ?, NOW())");
-                        $insert_query->bind_param("ssssds", $title, $author, $description, $genre, $price, $new_image_name);
-
-                        if ($insert_query->execute()) {
-                            header('Location: admin_panel.php?success_add=true');
-                            exit;
-                        } else {
-                            $error_message = "Помилка додавання книги в базу даних: " . $insert_query->error;
+                        if (!is_dir($image_destination_folder)) {
+                            if (!mkdir($image_destination_folder, 0755, true)) { // Використовуємо 0755
+                                $current_error = "Не вдалося створити папку для завантажень.";
+                            }
                         }
-                        $insert_query->close();
+
+                        if (empty($current_error)) { // Продовжуємо, якщо папка створена або існує
+                            $image_destination_path = $image_destination_folder . $new_image_name;
+
+                            if (move_uploaded_file($image_tmp_name, $image_destination_path)) {
+                                $insert_query = $conn->prepare("INSERT INTO books (title, author, description, genre, price, image, created_at)
+                                                 VALUES (?, ?, ?, ?, ?, ?, NOW())");
+                                if ($insert_query) { // Перевірка успішності prepare
+                                    $insert_query->bind_param("ssssds", $title, $author, $description, $genre, $price, $new_image_name);
+                                    if ($insert_query->execute()) {
+                                        $insert_query->close();
+                                        mysqli_close($conn);
+                                        header('Location: admin_panel.php?success_add=true');
+                                        exit;
+                                    } else {
+                                        $current_error = "Помилка додавання книги в базу даних: " . $insert_query->error;
+                                    }
+                                    $insert_query->close();
+                                } else {
+                                    $current_error = "Помилка підготовки запиту до БД: " . $conn->error;
+                                }
+                            } else {
+                                $current_error = "Помилка при завантаженні зображення на сервер.";
+                            }
+                        }
                     } else {
-                        $error_message = "Помилка при завантаженні зображення на сервер.";
+                        $current_error = "Невірний формат зображення. Дозволені формати: JPG, JPEG, PNG.";
                     }
                 } else {
-                    $error_message = "Невірний формат зображення. Дозволені формати: JPG, JPEG, PNG.";
+                    $current_error = "Завантажений файл не є зображенням або пошкоджений.";
                 }
             } else {
-                $error_message = "Зображення занадто велике. Максимальний розмір: 5MB.";
+                $current_error = "Зображення занадто велике. Максимальний розмір: 5MB.";
             }
         } else {
-            $error_message = "Сталася помилка при завантаженні зображення. Код помилки: " . $image_error;
+            $current_error = "Сталася помилка при завантаженні зображення. Код помилки: " . $image_error;
         }
     }
+
     // Якщо є помилка, повертаємося на адмін-панель з повідомленням
-    if (!empty($error_message)) {
-        header('Location: admin_panel.php?error_add=' . urlencode($error_message));
+    if (!empty($current_error)) {
+        mysqli_close($conn);
+        header('Location: admin_panel.php?error_add=' . urlencode($current_error));
         exit;
     }
 } else {
     // Якщо хтось намагається отримати доступ до цього файлу напряму без POST-запиту
+    mysqli_close($conn); // Закриваємо з'єднання, якщо воно було відкрито
     header('Location: admin_panel.php');
     exit;
 }
 
-// Ця частина HTML не буде відображатися, оскільки скрипт завжди робить редирект
-// Але якщо редиректу не буде (наприклад, при помилці, яку ми не перехопили),
-// то краще мати тут підключення хедера/футера або просто вихід.
-// В поточній логіці редирект є завжди.
-mysqli_close($conn);
+// Цей рядок mysqli_close($conn); тут не потрібен, оскільки скрипт завжди завершується exit; вище.
 ?>

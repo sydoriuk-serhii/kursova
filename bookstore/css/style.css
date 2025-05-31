@@ -1,364 +1,182 @@
-/* Загальні скидання та налаштування */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* === ДОДАТИ АБО МОДИФІКУВАТИ В style.css === */
 
-body {
-    font-family: 'Roboto', Arial, sans-serif;
-    background-color: #f8f9fa; /* Світліший фон для основного контенту */
-    color: #343a40; /* Основний колір тексту */
-    line-height: 1.6;
-    padding-bottom: 80px; /* Відступ для фіксованої кнопки "Назад" */
-}
-
-.site-main-content {
-    padding: 20px;
-    max-width: 1300px; /* Збільшив максимальну ширину */
-    margin: 0 auto; /* Центрування контенту */
-}
-
-/* Хедер */
-header {
-    background-color: #343a40; /* Темний, солідний колір */
-    color: #fff;
-    padding: 15px 25px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: sticky; /* Зробимо хедер "липким" */
-    top: 0;
-    z-index: 1020; /* Вище за інші елементи */
-}
-
-header h1 {
-    margin-bottom: 10px;
-    font-size: 2em; /* Збільшив розмір */
-    font-weight: 700;
-}
-
-header .site-title-link,
-header .site-title-link:hover {
-    color: #fff;
-    text-decoration: none;
-    background-color: transparent !important;
-    padding: 0 !important;
-    border: none !important;
-    display: inline !important;
-}
-
-header nav ul {
-    list-style-type: none;
-}
-
-header nav ul li {
-    display: inline-block;
-    margin: 0 12px; /* Відступи між пунктами */
-}
-
-header nav ul li a {
-    color: #e9ecef; /* Світліший колір для посилань */
-    text-decoration: none;
-    font-size: 1.05em; /* Трохи більший шрифт */
-    padding: 8px 12px;
-    border-radius: 4px;
-    transition: color 0.3s ease, background-color 0.3s ease;
-}
-
-header nav ul li a:hover,
-header nav ul li a.active { /* Клас active можна додавати через PHP */
-    color: #fff;
-    background-color: #007bff; /* Яскравий акцент при наведенні/активності */
-}
-
-
-/* Футер */
-footer {
-    background-color: #343a40;
-    color: #adb5bd;
-    text-align: center;
-    padding: 25px 20px;
-    font-size: 0.9em;
-    border-top: 4px solid #007bff; /* Акцентна лінія */
-}
-footer p {
-    margin-bottom: 5px;
-}
-
-/* Кнопка "Назад" фіксована */
-.fixed-bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: rgba(248, 249, 250, 0.97); /* Легкий фон з прозорістю */
-    padding: 12px 0;
-    text-align: center;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-    z-index: 1000;
-    border-top: 1px solid #dee2e6;
-}
-
-.btn-back-fixed {
-    padding: 10px 25px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 500;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.btn-back-fixed:hover {
-    background-color: #0056b3;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-/* Стилізація карток книг (загальна для index.php та catalog.php) */
-.books { /* Контейнер для карток */
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center; /* Центрування карток */
-    gap: 25px; /* Відстань між картками */
-    padding: 20px 0; /* Відступи зверху/знизу для секції */
-}
-
-.book { /* Окрема картка книги */
+/* Панелі та контейнери */
+.panel-container,
+.auth-form-container { /* Для форм логіну/реєстрації */
     background-color: #fff;
-    border-radius: 10px; /* Більш заокруглені кути */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* М'якша тінь */
-    width: 280px; /* Оптимальна ширина для більшості екранів */
-    padding: 20px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden; /* Щоб внутрішні елементи не виходили за межі радіусу */
+    padding: 30px 35px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    margin: 30px auto;
 }
 
-.book:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+.auth-form-container {
+    max-width: 480px;
 }
 
-.book img {
-    width: 100%;
-    max-height: 280px; /* Збільшив для кращої картинки */
-    object-fit: contain;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    border: 1px solid #eee; /* Тонка рамка для зображень */
-}
-
-.book h3 {
-    font-size: 1.2em; /* Збільшив */
-    font-weight: 500;
-    margin: 10px 0;
-    color: #212529; /* Темніший колір для заголовка */
-    min-height: 44px; /* Для вирівнювання висоти */
-}
-.book h3 a {
-    color: inherit;
-    text-decoration: none;
-}
-.book h3 a:hover {
-    color: #007bff; /* Акцентний колір при наведенні */
-    text-decoration: underline;
-}
-
-.book p {
-    font-size: 0.9em;
-    margin: 8px 0;
-    color: #6c757d; /* Сірий колір для вторинного тексту */
-}
-.book p.book-description { /* Стиль для короткого опису, якщо є */
-    min-height: 50px;
-    font-size: 0.85em;
-}
-
-
-.book p strong {
-    color: #495057;
-}
-
-.book .details-link {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9em;
-    display: inline-block;
-    margin-top: 12px;
-    padding: 6px 10px;
-    border: 1px solid #007bff;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.book .details-link:hover {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.btn-add-to-cart-small { /* Кнопка "Додати до кошика" */
-    background-color: #28a745; /* Зелений для позитивної дії */
+/* Модифікатори для кнопок (додаються до .btn-generic або form button) */
+.btn-positive,
+form button[type="submit"].btn-positive {
+    background-color: #28a745; /* Зелений */
     color: white;
-    border: none;
-    padding: 10px 15px; /* Збільшив padding */
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.95em;
-    font-weight: 500;
-    width: 100%;
-    margin-top: auto; /* Притискає кнопку до низу */
-    transition: background-color 0.3s ease;
 }
-
-.btn-add-to-cart-small:hover {
+.btn-positive:hover,
+form button[type="submit"].btn-positive:hover {
     background-color: #218838;
 }
 
-/* Заголовки секцій */
-.site-main-content h2 {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 1.8em;
-    color: #343a40;
-    font-weight: 500;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #007bff;
-    display: inline-block; /* Щоб бордер був по ширині тексту */
-}
-/* Центрування для h2, якщо він сам по собі */
-.section-title-container {
-    text-align: center;
-    margin-bottom: 30px;
-}
-.section-title-container h2 {
-    display: inline-block;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #007bff;
-}
-
-
-/* Повідомлення (успіх, помилка) */
-.message, .success-message, .error-message, .alert {
-    padding: 15px 20px;
-    margin: 20px auto; /* Центрування */
-    border-radius: 5px;
-    text-align: center;
-    font-size: 1em;
-    max-width: 800px; /* Обмеження ширини */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-.success-message, .alert[style*="#00796b"] { /* Для сумісності зі старими стилями */
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-.error-message {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-/* Загальні стилі для форм */
-form label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #495057;
-}
-form input[type="text"],
-form input[type="email"],
-form input[type="password"],
-form input[type="number"],
-form input[type="tel"],
-form textarea,
-form select {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    font-size: 1em;
-    background-color: #fff;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-form input[type="file"] {
-    margin-bottom: 15px;
-}
-
-form input:focus,
-form textarea:focus,
-form select:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    outline: none;
-}
-
-form button[type="submit"], .btn-checkout, .btn-continue, .btn-generic {
-    display: inline-block;
-    padding: 12px 25px;
-    background-color: #007bff;
+.btn-secondary,
+form button[type="submit"].btn-secondary {
+    background-color: #6c757d; /* Сірий */
     color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: center;
+}
+.btn-secondary:hover,
+form button[type="submit"].btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-danger,
+form button[type="submit"].btn-danger {
+    background-color: #dc3545; /* Червоний */
+    color: white;
+}
+.btn-danger:hover,
+form button[type="submit"].btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Посилання для дій (наприклад, видалення) */
+.action-link-danger {
+    color: #dc3545;
     text-decoration: none;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-weight: 500;
+    padding: 3px 5px; /* Невеликий padding для клікабельності */
+    border-radius: 3px;
+    transition: color 0.2s ease, background-color 0.2s ease;
 }
-form button[type="submit"]:hover, .btn-checkout:hover, .btn-continue:hover, .btn-generic:hover {
-    background-color: #0056b3;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-/* Адаптивність */
-@media (max-width: 768px) {
-    header h1 {
-        font-size: 1.6em;
-    }
-    header nav ul li {
-        margin: 0 5px;
-    }
-    header nav ul li a {
-        font-size: 0.95em;
-        padding: 6px 8px;
-    }
-
-    .book {
-        width: calc(50% - 15px); /* Дві картки в рядку на планшетах */
-    }
-    .site-main-content {
-        padding: 15px;
-    }
+.action-link-danger:hover {
+    color: #fff;
+    background-color: #dc3545;
 }
 
-@media (max-width: 576px) {
-    header nav ul {
-        display: flex;
-        flex-direction: column; /* Пункти меню один під одним */
-        align-items: center;
-    }
-    header nav ul li {
-        margin: 5px 0;
-        width: 80%; /* Ширина пунктів меню */
-    }
-    header nav ul li a {
-        display: block; /* Щоб займали всю ширину li */
-    }
-    .book {
-        width: 100%; /* Одна картка в рядку на мобільних */
-    }
-    .fixed-bottom-nav .btn-back-fixed {
-        width: 90%;
-        padding: 12px;
-    }
+/* Повідомлення "Нічого не знайдено" */
+.no-items-info {
+    text-align: center;
+    width: 100%;
+    font-size: 1.1em;
+    margin-top: 20px;
+    color: #6c757d; /* Як у .book p */
+    padding: 30px 20px;
+    background-color: #f8f9fa; /* Світлий фон */
+    border: 1px dashed #ced4da; /* Пунктирна рамка */
+    border-radius: 8px; /* Або 10px для повної уніфікації */
+}
+.no-items-info a {
+    color: #007bff; /* Як у .details-link */
+    font-weight: 500;
+    text-decoration: none;
+}
+.no-items-info a:hover {
+    text-decoration: underline;
+}
+
+/* Таблиці даних */
+.data-table-container {
+    overflow-x: auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px; /* Уніфіковано */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07); /* Легка тінь */
+    margin-top: 20px;
+}
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    font-size: 0.95em;
+}
+.data-table th,
+.data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+.data-table th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+.data-table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+.data-table td ul { /* Для вкладених списків у комірках */
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+.data-table td ul li {
+    font-size: 0.9em;
+    padding: 2px 0; /* Менший padding для елементів списку */
+    color: #6c757d;
+}
+.data-table td ul li:not(:last-child) {
+    margin-bottom: 2px;
+}
+
+/* Специфічні стилі для заголовків всередині панелей/секцій (не головний заголовок сторінки) */
+.panel-container h3, .auth-form-container h3, /* Якщо h3 використовується як підзаголовок всередині */
+.panel-section-title { /* Або спеціальний клас для таких заголовків */
+    font-size: 1.6em;
+    font-weight: 500;
+    color: #343a40;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0; /* Світлий розділювач */
+}
+
+/* Для текстових блоків з міткою та значенням (як у профілі) */
+.info-grid {
+    /* Можна буде використовувати для .profile-info */
+}
+.info-grid p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    font-size: 1.05em; /* Базовий розмір тексту */
+    color: #495057; /* Колір значення */
+    margin-bottom: 10px; /* Відстань між рядками */
+    line-height: 1.7;
+}
+.info-grid p strong { /* Мітка */
+    color: #343a40; /* Колір мітки */
+    font-weight: 500;
+    min-width: 180px; /* Щоб мітки вирівнювалися, можна налаштувати */
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+/* Стилі для price та description title зі сторінки book.php */
+.price-highlight {
+    font-size: 2em;
+    font-weight: 700;
+    color: #007bff;
+    margin: 20px 0;
+    display: block;
+}
+
+.content-subtitle { /* Наприклад, для "Опис:" на сторінці книги */
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #343a40;
+    margin-top: 25px;
+    margin-bottom: 8px;
+}
+
+/* Забезпечити, щоб стандартні кнопки форми займали всю ширину, якщо це потрібно часто */
+form button[type="submit"].btn-full-width {
+    width: 100%;
 }

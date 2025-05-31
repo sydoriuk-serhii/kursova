@@ -1,50 +1,46 @@
 /* css/catalog.css */
+/* .no-items-info та стилі для карток .book беруться з style.css */
 
-.filter-form {
-    display: flex; /* Розташування елементів в ряд */
-    flex-wrap: wrap; /* Перенос на новий рядок при необхідності */
-    justify-content: center; /* Центрування форми */
-    align-items: center; /* Вертикальне вирівнювання */
-    gap: 15px; /* Відстань між елементами */
+.filter-form-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
     padding: 20px;
-    margin: 0 auto 30px auto; /* Відступи та центрування */
-    background-color: #fff; /* Фон для форми */
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    max-width: 900px; /* Обмеження ширини форми */
+    margin: 0 auto 35px auto;
+    background-color: #ffffff;
+    border-radius: 8px; /* Або 10px */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    max-width: 950px;
 }
 
-.filter-form label {
-    margin-bottom: 0; /* Скидання дефолтного margin, якщо є */
-    font-weight: 500;
-    color: #495057;
+.filter-form-panel label { /* Успадковує з style.css */
+    margin-bottom: 0;
+    margin-right: 5px;
 }
 
-.filter-form select {
-    padding: 10px 15px; /* Збільшив padding для select */
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    background-color: #fff;
-    font-size: 0.95em;
-    min-width: 180px; /* Мінімальна ширина для select */
-    margin-bottom: 0; /* Скидання */
+.filter-form-panel select { /* Успадковує з style.css */
+    width: auto; /* Щоб не розтягувався на 100% */
+    min-width: 200px;
+    margin-bottom: 0; /* Для вирівнювання в рядку */
 }
 
-.filter-form select:hover {
-    border-color: #adb5bd;
-}
-
-.reset-filters-link {
-    color: #dc3545; /* Червоний для "скинути" */
+.reset-filters-button { /* Стилізуємо як кнопку .btn-danger */
+    /* Це посилання, але може виглядати як кнопка */
+    /* Або використовувати клас .btn-generic.btn-danger */
+    color: #dc3545;
     text-decoration: none;
     font-weight: 500;
-    padding: 10px 15px;
+    padding: 10px 15px; /* Як у .btn-generic */
     border: 1px solid #dc3545;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 5px; /* Як у .btn-generic */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    line-height: 1.5; /* Або normal */
+    display: inline-block;
+    background-color: #fff; /* Для контрасту */
 }
-
-.reset-filters-link:hover {
+.reset-filters-button:hover {
     background-color: #dc3545;
     color: #fff;
 }
