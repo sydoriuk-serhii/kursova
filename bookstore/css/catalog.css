@@ -1,46 +1,35 @@
 /* css/catalog.css */
 /* .no-items-info та стилі для карток .book беруться з style.css */
 
-.filter-form-panel {
+.filter-form-panel { /* Тепер також має клас .panel-container */
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: center; /* Або space-between, якщо потрібно розтягнути по ширині */
     align-items: center;
-    gap: 15px;
-    padding: 20px;
-    margin: 0 auto 35px auto;
-    background-color: #ffffff;
-    border-radius: 8px; /* Або 10px */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    max-width: 950px;
+    gap: 20px; /* Збільшено для кращих відступів */
+    /* padding: 20px; - Якщо потрібно перекрити padding від .panel-container, інакше видалити */
+    /* margin-bottom: 35px; - Якщо потрібно перекрити margin від .panel-container, інакше видалити */
+    max-width: 950px; /* Залишаємо специфічне обмеження ширини */
 }
 
-.filter-form-panel label { /* Успадковує з style.css */
-    margin-bottom: 0;
-    margin-right: 5px;
+.filter-form-panel .form-group { /* Якщо ви додали .form-group у PHP */
+    margin-bottom: 0; /* Забираємо стандартний відступ .form-group для горизонтального розташування */
+    display: flex; /* Для вирівнювання label та select в один ряд */
+    align-items: center;
+    gap: 8px; /* Відстань між label та select */
 }
 
-.filter-form-panel select { /* Успадковує з style.css */
+.filter-form-panel label {
+    /* margin-bottom: 0; - вже не потрібно, якщо label всередині .form-group з flex */
+    /* margin-right: 5px; - тепер керується gap у .form-group */
+    font-weight: 500; /* Можна зробити мітки жирнішими */
+    white-space: nowrap; /* Щоб текст мітки не переносився */
+}
+
+.filter-form-panel select {
     width: auto; /* Щоб не розтягувався на 100% */
-    min-width: 200px;
-    margin-bottom: 0; /* Для вирівнювання в рядку */
+    min-width: 200px; /* Можна налаштувати */
+    /* margin-bottom: 0; - вже не потрібно, якщо select всередині .form-group */
 }
 
-.reset-filters-button { /* Стилізуємо як кнопку .btn-danger */
-    /* Це посилання, але може виглядати як кнопка */
-    /* Або використовувати клас .btn-generic.btn-danger */
-    color: #dc3545;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 10px 15px; /* Як у .btn-generic */
-    border: 1px solid #dc3545;
-    border-radius: 5px; /* Як у .btn-generic */
-    transition: background-color 0.2s ease, color 0.2s ease;
-    line-height: 1.5; /* Або normal */
-    display: inline-block;
-    background-color: #fff; /* Для контрасту */
-}
-.reset-filters-button:hover {
-    background-color: #dc3545;
-    color: #fff;
-}
+/* Стилі для .reset-filters-button видалені, оскільки тепер використовуються класи .btn-generic .btn-outline-secondary .btn-sm */

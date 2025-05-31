@@ -2,98 +2,104 @@
 // Файл: book.php
 
 // 1. Підключення до бази даних
-include_once('includes/db.php'); //
+include_once('includes/db.php');
 
-// 2. Запуск сесії
-if (session_status() == PHP_SESSION_NONE) { //
-    session_start(); //
-}
+// 2. Запуск сесії (вже в header.php)
 
-// 3. Ініціалізація змінної $book
-$book = null; //
-$page_title_default = "Деталі книги - Книгу не знайдено"; //
+// 3. Ініціалізація змінних
+$book = null;
+$page_title_default = "Деталі книги - Інтернет-магазин книг"; // Загальний заголовок, якщо книга не знайдена
+$error_message_book = ''; // Ініціалізуємо повідомлення про помилку
 
 // 4. Перевірка, чи передано параметр id книги через URL, та отримання даних
-if (isset($_GET['id']) && is_numeric($_GET['id'])) { //
-    $book_id = (int)$_GET['id']; //
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $book_id = (int)$_GET['id'];
 
-    $query_book = $conn->prepare("SELECT * FROM books WHERE id = ?"); //
-    if ($query_book) { //
-        $query_book->bind_param("i", $book_id); //
-        $query_book->execute(); //
-        $result = $query_book->get_result(); //
+    $query_book = $conn->prepare("SELECT * FROM books WHERE id = ?");
+    if ($query_book) {
+        $query_book->bind_param("i", $book_id);
+        $query_book->execute();
+        $result = $query_book->get_result();
 
-        if ($result->num_rows == 1) { //
-            $book = $result->fetch_assoc(); //
-            $page_title_default = htmlspecialchars($book['title']) . " - Деталі книги"; //
+        if ($result && $result->num_rows == 1) { // Додано перевірку $result
+            $book = $result->fetch_assoc();
+            $page_title_default = htmlspecialchars($book['title']) . " - Деталі книги";
         } else {
-            $error_message_book = "На жаль, книгу за вашим запитом не знайдено."; //
+            $error_message_book = "На жаль, книгу за вашим запитом не знайдено.";
+            $page_title_default = "Книгу не знайдено - Інтернет-магазин книг"; // Оновлюємо заголовок вкладки
         }
-        $query_book->close(); //
+        if ($result) $result->close(); // Закриваємо результат, якщо він був
+        $query_book->close();
     } else {
-        error_log("Помилка підготовки SQL-запиту (деталі книги): " . $conn->error); //
-        $error_message_book = "Виникла помилка при завантаженні інформації про книгу."; //
+        error_log("Помилка підготовки SQL-запиту (деталі книги): " . $conn->error);
+        $error_message_book = "Виникла помилка при завантаженні інформації про книгу.";
+        $page_title_default = "Помилка завантаження - Інтернет-магазин книг";
     }
 } else {
-    $error_message_book = "Неправильний запит або ID книги не вказано."; //
+    $error_message_book = "Неправильний запит або ID книги не вказано.";
+    $page_title_default = "Неправильний запит - Інтернет-магазин книг";
 }
 
 // 5. Встановлюємо остаточний заголовок сторінки
-$page_title = $page_title_default; //
+$page_title = $page_title_default;
 
-// 6. ПІДКЛЮЧАЄМО ХЕДЕР
-// header.php тепер автоматично підключає css/style.css та css/book.css (якщо він існує)
-include_once('includes/header.php'); //
+// 6. Підключаємо хедер
+include_once('includes/header.php');
 ?>
 
-<?php // 7. Рядок <link rel="stylesheet" href="css/book.css"> ВИДАЛЕНО ?>
-
 <?php // 8. HTML-контент сторінки ?>
-<?php // Замінюємо клас основного контейнера ?>
-    <section class="panel-container book-detail-panel"> <?php // ?>
-        <?php if (isset($book) && $book): ?>
-            <?php // Замінюємо клас контейнера заголовка ?>
-            <div class="section-title-container"><h2>Деталі книги: <?php echo htmlspecialchars($book['title']); ?></h2></div> <?php // ?>
+    <section class="panel-container book-detail-panel">
+        <?php if ($book): // Якщо книга успішно завантажена ?>
+            <div class="section-title-container">
+                <h2><?php echo htmlspecialchars($book['title']); ?></h2> <?php // Заголовок тепер тільки назва книги, "Деталі книги" можна прибрати звідси ?>
+            </div>
 
-            <?php // Клас book-card-layout для специфічної розкладки цієї сторінки ?>
-            <div class="book-card-layout"> <?php // ?>
-                <div class="book-image-container"> <?php // ?>
-                    <img src="uploads/<?php echo htmlspecialchars($book['image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>"> <?php // ?>
+            <div class="book-card-layout">
+                <div class="book-image-container">
+                    <img src="uploads/<?php echo htmlspecialchars($book['image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
                 </div>
-                <div class="book-info-details"> <?php // ?>
-                    <h3><?php echo htmlspecialchars($book['title']); ?></h3> <?php // ?>
-                    <?php // Замінюємо клас для ціни ?>
-                    <p class="price-highlight"><strong>Ціна:</strong> <?php echo number_format($book['price'], 2); ?> грн.</p> <?php // ?>
-                    <p><strong>Автор:</strong> <?php echo htmlspecialchars($book['author']); ?></p> <?php // ?>
-                    <p><strong>Жанр:</strong> <?php echo htmlspecialchars($book['genre']); ?></p> <?php // ?>
-                    <?php // Замінюємо клас для заголовка опису ?>
-                    <p class="content-subtitle"><strong>Опис:</strong></p> <?php // ?>
-                    <p><?php echo nl2br(htmlspecialchars($book['description'])); ?></p> <?php // ?>
+                <div class="book-info-details">
+                    <?php /* Назва книги вже є в .section-title-container, тут можна прибрати або зробити меншим */ ?>
+                    <?php /* <h3><?php echo htmlspecialchars($book['title']); ?></h3> */ ?>
 
-                    <?php // Видаляємо інлайновий стиль та змінюємо клас кнопки ?>
-                    <form action="add_to_cart.php" method="POST"> <?php // ?>
-                        <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>"> <?php // ?>
-                        <button type="submit" class="btn-generic btn-positive">Додати в кошик</button> <?php // ?>
+                    <p class="price-highlight"><?php echo number_format($book['price'], 2); ?> грн.</p> <?php // Ціну можна винести вище, прибравши "Ціна:" ?>
+
+                    <div class="info-grid"> <?php // Використовуємо info-grid для характеристик ?>
+                        <p><strong>Автор:</strong> <?php echo htmlspecialchars($book['author']); ?></p>
+                        <p><strong>Жанр:</strong> <?php echo htmlspecialchars($book['genre']); ?></p>
+                        <?php // Тут можна додати інші характеристики, якщо вони є: рік видання, видавництво, кількість сторінок тощо. ?>
+                    </div>
+
+                    <h4 class="content-subtitle">Опис:</h4> <?php // Змінено на h4 для кращої ієрархії, якщо h2 вже є ?>
+                    <div class="book-description-text"> <?php // Окремий контейнер для тексту опису ?>
+                        <?php echo nl2br(htmlspecialchars($book['description'])); ?>
+                    </div>
+
+                    <form action="add_to_cart.php" method="POST" class="add-to-cart-form"> <?php // Додано клас формі ?>
+                        <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
+                        <button type="submit" class="btn-generic btn-positive btn-lg">
+                            <span class="icon" aria-hidden="true">🛒</span> Додати в кошик
+                        </button>
                     </form>
                 </div>
             </div>
-        <?php elseif (isset($error_message_book)): ?>
-            <div class="section-title-container"><h2>Помилка</h2></div> <?php // ?>
-            <?php // Видаляємо інлайновий стиль, .error-message вже має стилі ?>
-            <p class="error-message"><?php echo $error_message_book; ?> <a href="catalog.php">Повернутися до каталогу</a>.</p> <?php // ?>
-        <?php else: ?>
-            <div class="section-title-container"><h2>Інформація недоступна</h2></div> <?php // ?>
-            <?php // Видаляємо інлайновий стиль, можна додати .no-items-info або залишити <p> ?>
-            <p class="no-items-info">Не вдалося завантажити деталі книги. <a href="catalog.php">Повернутися до каталогу</a>.</p> <?php // ?>
+        <?php else: // Якщо книга не знайдена або сталася помилка ?>
+            <div class="section-title-container">
+                <h2><?php echo ($error_message_book === "Неправильний запит або ID книги не вказано.") ? "Неправильний запит" : "Помилка"; ?></h2>
+            </div>
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#10008;</span>
+                <?php echo htmlspecialchars($error_message_book); ?> <a href="catalog.php" class="alert-link">Повернутися до каталогу</a>.
+            </div>
         <?php endif; ?>
     </section>
 
 <?php
 // 9. Закриття з'єднання з базою даних
-if (isset($conn)) { //
-    mysqli_close($conn); //
+if (isset($conn)) {
+    mysqli_close($conn);
 }
 
 // 10. Підключаємо футер
-include_once('includes/footer.php'); //
+include_once('includes/footer.php');
 ?>

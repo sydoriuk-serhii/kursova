@@ -1,73 +1,103 @@
 /* css/checkout.css */
-/* Більшість стилів у style.css (.panel-container, .btn-secondary, .btn-positive) */
+/* Специфічні стилі для сторінки оформлення замовлення */
 
-/* .checkout-form-container буде .panel-container */
-/* Кнопка "Повернутися до кошика" буде .btn-generic.btn-secondary */
+/* Загальні стилі для форми успадковуються з style.css (.form-group, label, input тощо) */
+/* Клас .checkout-form-panel тепер .panel-container, стилі з style.css */
 
-/* Загальні стилі для форми успадковуються */
-.checkout-form label { /* Якщо потрібен специфічний відступ */
-    margin-top: 10px;
-}
-.checkout-form label:first-of-type {
-    margin-top: 0;
+/* Якщо для міток у формі оформлення потрібні специфічні відступи, відмінні від .form-group */
+/* .checkout-form .form-group label { ... } */
+/* Поточні стилі для .checkout-form label:first-of-type та margin-top: 10px;
+   ймовірно, вже не потрібні, оскільки .form-group з style.css має margin-bottom.
+   Якщо ж відступи між полями потрібно зробити більшими саме тут, можна залишити: */
+.checkout-form .form-group {
+    margin-bottom: 1.75rem; /* Трохи більший відступ між групами полів */
 }
 
-.order-summary-details { /* Блок "Склад замовлення" */
-    margin-top: 30px;
-    padding: 20px 25px;
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 8px; /* Або 10px */
+
+/* Блок "Склад замовлення" */
+.order-summary-details {
+    margin-top: 35px; /* Збільшено відступ зверху */
+    padding: 25px 30px; /* Уніфіковано з .panel-container, якщо це окремий блок */
+    /* Якщо .order-summary-details є частиною .panel-container, то ці padding можуть бути не потрібні */
+    background-color: var(--light-gray); /* Світлий фон для виділення */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-medium); /* Уніфікований радіус */
 }
-.order-summary-details h3 { /* Заголовок всередині блоку */
-    font-size: 1.3em;
+
+/* Заголовок всередині блоку "Склад замовлення" тепер .panel-section-title,
+   стилі для нього беруться з style.css. Якщо потрібні дуже специфічні налаштування: */
+.order-summary-details .panel-section-title { /* Або .order-summary-details h3, якщо клас не додано */
+    font-size: 1.2em; /* Зменшено, оскільки це підсекція */
     font-weight: 500;
-    color: #343a40;
-    margin-bottom: 15px;
+    color: var(--text-color-primary);
+    margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--medium-gray);
 }
+
 .order-summary-details ul {
     list-style-type: none;
     padding-left: 0;
+    margin-bottom: 20px; /* Відступ від списку до загальної суми */
 }
+
 .order-summary-details ul li {
-    font-size: 0.95em;
-    color: #495057;
-    margin-bottom: 8px;
-    padding: 8px 0;
+    font-size: 0.9rem; /* Трохи зменшено */
+    color: var(--text-color-secondary);
+    margin-bottom: 10px; /* Збільшено */
+    padding: 10px 0; /* Збільшено */
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px dotted #e0e0e0;
+    align-items: center; /* Вирівнювання по центру */
+    border-bottom: 1px dotted var(--medium-gray);
 }
+
 .order-summary-details ul li:last-child {
     border-bottom: none;
 }
-.order-summary-details ul li span:first-child {
+
+.order-summary-details ul li span:first-child { /* Назва товару та кількість */
     flex-grow: 1;
-    padding-right: 10px;
-}
-.order-summary-details ul li span:last-child {
-    font-weight: 500;
-    white-space: nowrap;
+    padding-right: 15px; /* Збільшено */
 }
 
-.order-summary-details p.total-amount { /* Для "Загальна сума до сплати" */
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 2px solid #007bff; /* Синій акцент */
+.order-summary-details ul li span:last-child { /* Сума по позиції */
+    font-weight: 700; /* Зроблено жирнішим */
+    white-space: nowrap;
+    color: var(--text-color-primary);
+}
+
+/* Загальна сума до сплати */
+.order-summary-details p.total-amount {
+    margin-top: 25px; /* Збільшено */
+    padding-top: 20px; /* Збільшено */
+    border-top: 2px solid var(--primary-color);
     text-align: right;
 }
+
 .order-summary-details p.total-amount strong {
-    font-size: 1.4em;
+    font-size: 1.5em; /* Збільшено */
     font-weight: 700;
-    color: #007bff; /* Синій акцент */
+    color: var(--primary-color);
 }
 
-/* Кнопка "Підтвердити замовлення" буде .btn-generic.btn-positive (або просто .btn-generic) */
-/* Якщо потрібна повна ширина, додайте .btn-full-width */
+/* Кнопка "Підтвердити замовлення" тепер .btn-generic .btn-positive .btn-lg .btn-full-width,
+   стилі для неї (розмір, відступи) задаються в style.css або інлайново/через додатковий клас у PHP.
+   Наведений нижче стиль можна видалити, якщо кнопка вже має .btn-lg та необхідні відступи. */
+/*
 .checkout-form button[type="submit"].btn-positive {
-    padding: 15px; /* Збільшений padding */
-    font-size: 1.1em; /* Збільшений шрифт */
+    padding: 15px;
+    font-size: 1.1em;
     margin-top: 25px;
+}
+*/
+/* Якщо потрібен специфічний відступ для кнопки саме на цій сторінці, краще додати його
+   через обгортку або окремий клас, а не перекривати властивості .btn-lg.
+   Наприклад, у PHP: <div style="margin-top: 25px;"><button ...></button></div>
+   Або додати до форми клас, наприклад, .checkout-form-final-action { margin-top: 25px; }
+*/
+
+.checkout-navigation-buttons { /* Контейнер для кнопки "Повернутися до кошика" */
+    margin-bottom: 25px; /* Збільшено відступ */
+    text-align: left; /* Або center/right, залежно від бажаного розташування */
 }

@@ -7,87 +7,96 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // 2. Підключення до бази даних
-include_once('includes/db.php'); // include_once для уникнення повторного підключення, якщо db.php вже був десь викликаний
+include_once('includes/db.php');
 
 // 3. Перевірка, чи передано параметр book_id через POST та чи він є числом
 if (isset($_POST['book_id']) && is_numeric($_POST['book_id'])) {
-    $book_id = (int)$_POST['book_id']; // Приведення до цілого числа
+    $book_id = (int)$_POST['book_id'];
 
-    // 4. Перевірка, чи книга існує в базі даних (використовуємо підготовлений запит)
-    $query_book = $conn->prepare("SELECT * FROM books WHERE id = ?");
+    // 4. Перевірка, чи книга існує в базі даних
+    $query_book = $conn->prepare("SELECT id, title, author, price, image FROM books WHERE id = ?"); // Вибираємо тільки потрібні поля
     if ($query_book) {
         $query_book->bind_param("i", $book_id);
         $query_book->execute();
         $result = $query_book->get_result();
 
-        if ($result->num_rows == 1) {
+        if ($result && $result->num_rows == 1) {
             $book = $result->fetch_assoc();
+            $result->close(); // Закриваємо результат якомога раніше
+            $query_book->close(); // Закриваємо стейтмент
 
             // Якщо кошик ще не існує в сесії, створюємо його
-            if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) { // Додав перевірку, чи це масив
+            if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
                 $_SESSION['cart'] = [];
             }
 
             $is_book_in_cart = false;
-            $found_item_key = null; // Для збереження ключа знайденого товару
+            $found_item_key = null;
 
             // Перевірка, чи книга вже є в кошику
             foreach ($_SESSION['cart'] as $item_key => $item_value) {
-                // Переконуємося, що 'id' існує в елементі кошика
                 if (isset($item_value['id']) && $item_value['id'] == $book_id) {
                     $is_book_in_cart = true;
-                    $found_item_key = $item_key; // Зберігаємо ключ
+                    $found_item_key = $item_key;
                     break;
                 }
             }
 
             $redirect_url = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'catalog.php';
-            $message_param = '';
+            $message_param_text = ''; // Змінено ім'я змінної
 
             if (!$is_book_in_cart) {
-                $_SESSION['cart'][] = [ // Додаємо як новий елемент масиву
+                $_SESSION['cart'][] = [
                     'id' => $book['id'],
                     'title' => $book['title'],
                     'author' => $book['author'],
-                    'price' => $book['price'],
+                    'price' => (float)$book['price'], // Зберігаємо як float
                     'image' => $book['image'],
-                    'quantity' => 1 // Початкова кількість
+                    'quantity' => 1
                 ];
-                $message_param = "message_cart=" . urlencode("Книгу '" . htmlspecialchars($book['title']) . "' додано до кошика!");
+                $message_param_text = "Книгу «" . htmlspecialchars($book['title']) . "» додано до кошика!";
             } else {
-                // Якщо книга вже в кошику, можна збільшити кількість (якщо така логіка потрібна)
-                // Наприклад: $_SESSION['cart'][$found_item_key]['quantity']++;
-                // Або просто повідомити, що вона вже там
-                $message_param = "message_cart=" . urlencode("Книга '" . htmlspecialchars($book['title']) . "' вже є у вашому кошику.");
+                // Збільшуємо кількість, якщо книга вже в кошику
+                if (isset($_SESSION['cart'][$found_item_key]['quantity'])) {
+                    $_SESSION['cart'][$found_item_key]['quantity']++;
+                } else {
+                    $_SESSION['cart'][$found_item_key]['quantity'] = 1; // На випадок, якщо quantity не було встановлено раніше
+                }
+                $message_param_text = "Кількість книги «" . htmlspecialchars($book['title']) . "» у кошику збільшено.";
             }
+
+            $message_param = "message_cart=" . urlencode($message_param_text);
+
 
             // Формуємо URL для редиректу
             if (strpos($redirect_url, '?') !== false) {
-                header("Location: " . $redirect_url . "&" . $message_param);
+                $final_redirect_url = $redirect_url . "&" . $message_param;
             } else {
-                header("Location: " . $redirect_url . "?" . $message_param);
+                $final_redirect_url = $redirect_url . "?" . $message_param;
             }
-            $query_book->close(); // Закриваємо підготовлений запит
-            mysqli_close($conn);  // Закриваємо з'єднання з БД
+
+            if (isset($conn)) mysqli_close($conn);
+            header("Location: " . $final_redirect_url);
             exit();
 
         } else {
             // Якщо книга не знайдена в БД
+            if ($result) $result->close();
             $query_book->close();
-            mysqli_close($conn);
+            if (isset($conn)) mysqli_close($conn);
             header("Location: catalog.php?message=" . urlencode("Помилка: Книгу не знайдено в базі даних."));
             exit();
         }
     } else {
         // Помилка підготовки запиту
         error_log("Помилка підготовки SQL-запиту (add_to_cart): " . $conn->error);
-        mysqli_close($conn);
-        header("Location: catalog.php?message=" . urlencode("Сталася серверна помилка. Спробуйте пізніше."));
+        if (isset($conn)) mysqli_close($conn);
+        header("Location: catalog.php?message=" . urlencode("Сталася серверна помилка при додаванні книги до кошика. Спробуйте пізніше."));
         exit();
     }
 } else {
     // Якщо параметр book_id не передано або він некоректний
-    if (isset($conn)) mysqli_close($conn); // Закриваємо з'єднання, якщо воно було відкрито
+    if (isset($conn)) mysqli_close($conn);
     header("Location: catalog.php?message=" . urlencode("Невірний запит для додавання до кошика."));
     exit();
 }

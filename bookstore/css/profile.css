@@ -1,49 +1,59 @@
 /* css/profile.css */
-/* .panel-container та .info-grid (для відображення даних) тепер у style.css */
+/* Специфічні стилі для сторінки профілю користувача */
 
 .profile-custom-panel { /* Модифікатор для .panel-container */
-    max-width: 800px;
+    max-width: 800px; /* Залишаємо, це специфічне обмеження для панелі профілю */
+    /* Інші властивості .panel-container успадковуються з style.css */
 }
 
-.profile-details-separator { /* Блок з деталями та розділювачем */
-    margin-bottom: 30px;
-    padding-bottom: 25px;
-    border-bottom: 1px solid #e0e0e0;
+.profile-details-separator { /* Блок з основними деталями профілю та розділювачем */
+    margin-bottom: 35px; /* Збільшено */
+    padding-bottom: 30px; /* Збільшено */
+    border-bottom: 1px solid var(--border-color); /* Уніфікований колір рамки */
 }
 
-.profile-welcome-message { /* "Ласкаво просимо..." */
-    font-size: 1.8em;
-    font-weight: 500;
-    color: #007bff; /* Синій акцент */
-    margin-bottom: 25px;
+.profile-welcome-message { /* Привітання користувача */
+    font-size: 1.7em; /* Трохи зменшено для балансу з h2 сторінки */
+    font-weight: 700; /* Зроблено жирнішим */
+    color: var(--primary-color); /* Використовуємо CSS змінну */
+    margin-bottom: 30px; /* Збільшено */
     text-align: center;
 }
 
-/* .info-grid p та .info-grid p strong стилізуються в style.css */
-/* Якщо для профілю потрібні інші відступи для strong: */
+/* Стилі для .info-grid та його елементів p, strong успадковуються з style.css.
+   Нижче наведено специфічне перекриття для міток strong у профілі, якщо потрібно. */
 .profile-custom-panel .info-grid p strong {
-    min-width: 200px; /* Налаштуйте для кращого вигляду */
+    min-width: 220px; /* Збільшено для кращого вирівнювання міток на цій сторінці */
+    /* color: var(--text-color-primary); - колір успадковується з .info-grid p strong в style.css */
+    /* font-weight: 500; - вага успадковується */
 }
+/* Якщо для значень потрібен інший колір або стиль саме в профілі: */
+/*
+.profile-custom-panel .info-grid p span.value { // Припускаючи, що значення обгорнуте в span
+    color: var(--text-color-secondary);
+}
+*/
 
-.profile-section-subtitle { /* Для "Історія моїх замовлень" */
-    font-size: 1.5em;
+.profile-section-subtitle { /* Для підзаголовків секцій, наприклад, "Історія моїх замовлень" */
+    font-size: 1.4em; /* Трохи зменшено для підпорядкування h2 та h3 */
     font-weight: 500;
-    color: #343a40;
-    margin-top: 35px;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed #ced4da; /* Пунктирний розділювач */
+    color: var(--text-color-primary);
+    margin-top: 30px; /* Зменшено, якщо це не перша секція */
+    margin-bottom: 20px; /* Збільшено */
+    padding-bottom: 10px; /* Збільшено */
+    border-bottom: 1px dashed var(--medium-gray); /* Уніфікований колір */
 }
 
-.profile-custom-panel p.profile-action-link a { /* Посилання "Мої замовлення" */
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1.05em;
-}
-.profile-custom-panel p.profile-action-link a:hover {
-    text-decoration: underline;
-    color: #0056b3;
+/* Стилі для контейнера з посиланням "Мої замовлення" */
+.profile-action-link-container {
+    margin-top: 15px; /* Відступ від підзаголовка */
+    font-size: 1.05em; /* Залишаємо, якщо потрібно трохи більший шрифт для цього блоку */
+    /* text-align: center; */ /* Якщо потрібно центрувати посилання/кнопку */
 }
 
-/* Якщо буде кнопка "Редагувати профіль" - використовуйте .btn-generic.btn-secondary або .btn-primary */
+/* Якщо буде кнопка "Редагувати профіль" (приклад): */
+.edit-profile-button-container {
+    margin-top: 30px;
+    text-align: center; /* Або left/right */
+}
+/* Для самої кнопки використовуються класи .btn-generic .btn-secondary (або .btn-primary) з style.css */

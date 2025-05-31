@@ -1,96 +1,162 @@
 /* css/cart.css */
-/* Більшість стилів у style.css (.no-items-info, .btn-secondary, .action-link-danger, .btn-positive) */
+/* Специфічні стилі для сторінки кошика */
 
-.cart-items-list {
-    margin-top: 20px;
+/* Загальний контейнер сторінки кошика, якщо потрібні специфічні відступи */
+.cart-page-container {
+    /* Наприклад: */
+    /* padding: 0 10px; */ /* Якщо потрібні менші бічні відступи на мобільних */
 }
 
-.cart-item-row {
+/* Список товарів у кошику */
+.cart-items-list {
+    margin-top: 20px; /* Залишаємо, якщо потрібно */
+    display: flex; /* Додаємо, якщо хочемо, щоб панелі товарів йшли в колонку */
+    flex-direction: column;
+    gap: 20px; /* Відстань між панелями товарів */
+}
+
+/* Кожен рядок товару тепер також .panel-container */
+.cart-item-row { /* Цей клас тепер доповнює .panel-container */
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Або nowrap, якщо зображення та деталі завжди в один ряд */
     gap: 20px;
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #fff;
-    border-radius: 8px; /* Можна 10px для уніфікації */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    align-items: flex-start;
+    align-items: flex-start; /* Вирівнювання по верху */
+    /* padding: 20px; - Вже є в .panel-container, якщо значення підходить */
+    /* background-color, border-radius, box-shadow - успадковуються від .panel-container */
+    /* margin-bottom: 20px; - Тепер керується gap в .cart-items-list */
 }
 
 .cart-item-image {
-    flex: 0 0 100px; /* Менше зображення для кошика */
+    flex: 0 0 100px; /* Фіксована ширина для зображення */
+    align-self: center; /* Центрування зображення по вертикалі відносно деталей */
 }
 .cart-item-image img {
     width: 100%;
     height: auto;
-    border-radius: 4px;
-    border: 1px solid #eee;
+    max-height: 140px; /* Обмеження висоти, щоб не було занадто великим */
+    object-fit: contain;
+    border-radius: var(--border-radius-small); /* Уніфікований радіус */
+    border: 1px solid var(--border-color);   /* Уніфікована рамка */
 }
 
 .cart-item-details {
-    flex: 1 1 300px;
+    flex: 1 1 300px; /* Займає решту місця */
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px; /* Збільшено відстань між елементами деталей */
 }
 .cart-item-details h3 {
-    font-size: 1.2em;
-    font-weight: 500;
+    font-size: 1.15em; /* Трохи зменшено, якщо назви довгі */
+    font-weight: 700; /* Зроблено жирнішим */
+    margin-top: 0; /* Забрати відступ зверху */
     margin-bottom: 0;
+    color: var(--text-color-primary);
 }
 .cart-item-details h3 a {
-    color: inherit; /* Успадковує від h3 */
+    color: inherit;
     text-decoration: none;
 }
 .cart-item-details h3 a:hover {
-    color: #007bff;
+    color: var(--primary-color);
     text-decoration: underline;
 }
 .cart-item-details p {
     margin-bottom: 0;
-    font-size: 0.95em;
-    color: #6c757d;
+    font-size: 0.9em; /* Зменшено для компактності */
+    color: var(--text-color-muted);
 }
 .cart-item-details p strong {
-    color: #495057;
+    color: var(--text-color-secondary);
+    font-weight: 500; /* Для міток, як "Автор:", "Ціна:" */
+}
+.cart-item-details .item-subtotal { /* Сума по позиції */
+    font-size: 1em; /* Трохи більший шрифт для суми */
+    font-weight: 700;
+    color: var(--text-color-primary);
+    margin-top: 5px; /* Невеликий відступ зверху */
+}
+.cart-item-details .action-link-danger { /* Посилання "Видалити" */
+    margin-top: 5px; /* Відступ від суми */
+    align-self: flex-start; /* Щоб не розтягувалося на всю ширину, якщо .cart-item-details має align-items: stretch */
 }
 
+
+/* Форма оновлення кількості */
 .update-quantity-form-inline {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 5px;
+    margin-top: 8px; /* Збільшено відступ */
+    margin-bottom: 8px;
 }
-.update-quantity-form-inline input[type="number"] {
-    /* Успадковує з style.css, але можна перевизначити ширину/padding */
-    width: 70px;
-    padding: 8px; /* Або 12px як в style.css */
+.update-quantity-form-inline .form-group { /* Обгортка для label + input */
+    margin-bottom: 0; /* Забираємо стандартний відступ */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.update-quantity-form-inline label {
+    margin-bottom: 0; /* Забираємо стандартний відступ */
+    font-size: 0.9em;
+    font-weight: 400; /* Звичайний шрифт для мітки "Кількість" */
+    white-space: nowrap;
+}
+.update-quantity-form-inline input[type="number"].form-control-sm {
+    /* width: 65px; /* Трохи зменшено */
+    /* padding: 0.3rem 0.5rem; /* Якщо потрібен менший padding, ніж у стандартного .form-control-sm */
     text-align: center;
-    margin-bottom: 0; /* Важливо для inline форми */
+    /* margin-bottom: 0; - вже не потрібно */
+    /* Стилі для .form-control-sm беруться з style.css, тут можна лише перекрити ширину/padding */
+    /* Якщо стандартний .form-control-sm (який ми ще не визначали в style.css) не підходить,
+       можна визначити його тут або в style.css */
 }
-/* Кнопка оновлення буде .btn-generic.btn-secondary */
-/* Посилання "Видалити" буде .action-link-danger */
+/* Якщо .form-control-sm ще не визначено в style.css: */
+input[type="number"].form-control-sm {
+    height: calc(1.5em + 0.6rem + 2px); /* Відповідає .btn-sm */
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    width: 70px; /* Залишаємо вашу ширину */
+    text-align: center;
+}
 
-.cart-summary-block { /* Блок для загальної суми */
-    margin-top: 25px;
+
+/* Блок для загальної суми (тепер також .panel-container) */
+.cart-summary-block { /* Цей клас тепер доповнює .panel-container */
+    margin-top: 30px; /* Збільшено */
     text-align: right;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px; /* Або 10px */
-    border: 1px solid #e9ecef;
+    /* padding: 20px; - Вже є в .panel-container */
+    /* background-color, border-radius, border - успадковуються від .panel-container */
 }
 .cart-summary-block h3 {
-    font-size: 1.5em;
+    font-size: 1.6em; /* Збільшено */
     font-weight: 700;
-    color: #007bff; /* Синій акцент */
+    color: var(--primary-color);
+    margin: 0; /* Забрати дефолтні відступи h3 */
 }
 
-.cart-actions-buttons { /* Контейнер для кнопок "Оформити" та "Продовжити" */
+
+/* Контейнер для кнопок "Оформити" та "Продовжити" */
+.cart-actions-buttons {
     margin-top: 30px;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-wrap: wrap; /* Дозволити перенесення на мобільних */
+    justify-content: space-between; /* Кнопки по краях */
     align-items: center;
-    gap: 15px;
+    gap: 15px; /* Відстань між кнопками, якщо вони переносяться */
 }
-/* Кнопки .btn-checkout (може бути .btn-generic.btn-positive) та .btn-continue (.btn-generic.btn-secondary) */
+.cart-actions-buttons .btn-generic { /* Стилізація кнопок, якщо потрібна специфіка */
+    /* Наприклад, на мобільних зробити їх на всю ширину */
+}
+@media (max-width: 576px) { /* Адаптивність для кнопок */
+    .cart-actions-buttons {
+        flex-direction: column; /* Кнопки одна під одною */
+        align-items: stretch; /* Розтягнути кнопки на всю доступну ширину */
+    }
+    .cart-actions-buttons .btn-generic {
+        width: 100%; /* Кожна кнопка на всю ширину */
+        margin-bottom: 10px; /* Відступ між кнопками */
+    }
+    .cart-actions-buttons .btn-generic:last-child {
+        margin-bottom: 0;
+    }
+}

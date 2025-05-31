@@ -1,22 +1,29 @@
-/* css/admin_panel.css */
-/* Більшість стилів тепер у style.css (.panel-container, .panel-section-title, .data-table, .btn-positive, .no-items-info) */
-
-/* Якщо потрібні дуже специфічні налаштування для адмін-панелі: */
-.admin-panel-section { /* Модифікатор для .panel-container */
-    padding: 25px 30px;
-    margin-bottom: 35px;
+.admin-panel-section {
+    /* padding: 25px 30px;  - Ймовірно, успадковується від .panel-container */
+    margin-bottom: 35px; /* Залишаємо, якщо потрібен саме такий нижній відступ */
 }
 
-/* Якщо кнопка додавання книги має специфічну мінімальну ширину */
+/* Специфічні стилі для контейнерів секцій в адмін-панелі, якщо потрібно */
+.add-book-panel {
+    /* Додаткові стилі для панелі додавання книги, якщо є */
+}
+
+.orders-panel {
+    /* Додаткові стилі для панелі замовлень, якщо є */
+}
+
+/* Специфічна мінімальна ширина для кнопки додавання книги */
 .add-book-form button[type="submit"].btn-positive {
-    min-width: 220px;
-    width: auto; /* Щоб не була 100% ширини, якщо .btn-generic так налаштований */
+    min-width: 220px; /* Залишаємо */
+    width: auto;      /* Залишаємо */
 }
 
-/* Специфіка для таблиці замовлень адміністратора, якщо відрізняється від .data-table */
+/* Специфіка для таблиці замовлень адміністратора */
 .data-table.admin-orders-table td {
-    vertical-align: top; /* Може бути корисним для довгих списків */
+    vertical-align: top; /* Залишаємо, корисно для довгих списків у комірках */
 }
+
 .data-table.admin-orders-table td ul li {
-    line-height: 1.4; /* Специфічний міжрядковий інтервал */
+    line-height: 1.4; /* Залишаємо, якщо стандартний line-height не підходить */
+    /* font-size: 0.88em; */ /* Приклад: трохи інший розмір шрифту для списків в адмінці */
 }

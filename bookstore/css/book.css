@@ -1,78 +1,128 @@
 /* css/book.css */
-/* Більшість стилів тепер у style.css (.panel-container, .price-highlight, .content-subtitle, .btn-positive) */
+/* Специфічні стилі для сторінки окремої книги */
 
 .book-detail-panel { /* Модифікатор для .panel-container */
-    max-width: 1000px;
-    padding: 30px 35px;
+    max-width: 1000px; /* Залишаємо, це специфічне обмеження */
+    /* padding: 30px 35px; - Якщо відрізняється від .panel-container, інакше можна видалити */
+    /* Якщо padding з .panel-container (25px 30px) підходить, то цей рядок не потрібен */
 }
 
-.book-card-layout { /* Специфічна розкладка для зображення та інфо */
+.book-card-layout {
     display: flex;
-    flex-wrap: wrap;
-    gap: 30px; /* Відстань між зображенням та інфо */
+    flex-wrap: wrap; /* Залишаємо для адаптивності */
+    gap: 35px; /* Збільшено для кращого візуального розділення */
+    align-items: flex-start; /* Вирівнювання по верху, якщо блоки різної висоти */
 }
 
 .book-image-container {
-    flex: 1 1 320px; /* Адаптивна ширина */
-    max-width: 380px;
-    margin: 0 auto 20px auto; /* Центрування на малих екранах */
+    flex: 1 1 300px; /* Змінено flex-basis для кращої адаптивності */
+    max-width: 360px; /* Трохи зменшено для балансу */
+    margin: 0 auto 20px auto; /* Центрування на малих екранах (якщо flex-direction: column) */
 }
 
 .book-image-container img {
     width: 100%;
-    height: auto;
-    max-height: 550px; /* Обмеження висоти */
-    object-fit: contain; /* Щоб книга повністю вміщалася */
-    border-radius: 6px; /* Як у .book img */
-    border: 1px solid #eee; /* Як у .book img */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Невелика тінь для зображення */
+    height: auto; /* Зберігаємо для пропорцій */
+    max-height: 500px; /* Зменшено для компактності */
+    object-fit: contain;
+    border-radius: var(--border-radius-medium); /* Уніфікований радіус з style.css */
+    border: 1px solid var(--border-color);     /* Уніфікований колір рамки з style.css */
+    box-shadow: var(--box-shadow-md);          /* Уніфікована тінь з style.css */
 }
 
 .book-info-details {
-    flex: 2 1 450px; /* Займає більше місця */
-    text-align: left;
+    flex: 2 1 400px; /* Змінено flex-basis */
+    text-align: left; /* Залишаємо */
 }
 
-.book-info-details h3 { /* Головна назва книги на цій сторінці */
-    font-size: 2.2em; /* Велика назва */
-    font-weight: 700;
-    color: #2c3e50; /* Темно-синій/сірий, акцентний */
-    margin-bottom: 15px;
-    line-height: 1.3;
+/* Назва книги в .book-info-details тепер не потрібна, оскільки вона виводиться у .section-title-container h2 */
+/* Якщо ж ви її залишаєте в book.php, то стилі можна залишити: */
+/*
+.book-info-details h3 {
+    font-size: 2em; /* Можна трохи зменшити, якщо h2 вже є */
+/* font-weight: 700; */
+/* color: var(--text-color-primary); */ /* Уніфікований колір */
+/* margin-top: 0; */ /* Якщо це перший елемент */
+/* margin-bottom: 15px; */
+/* line-height: 1.3; */
+/* }
+*/
+
+/* Стилі для .price-highlight та .content-subtitle беруться з style.css */
+
+/* Стилі для характеристик книги, якщо вони виводяться через .info-grid */
+.book-info-details .info-grid p {
+    /* Тут можна додати специфічні відступи або стилі для міток/значень,
+       якщо вони відрізняються від стандартного .info-grid */
+    /* Наприклад, інший min-width для strong або інші кольори */
+    font-size: 0.95rem; /* Трохи менший шрифт для характеристик */
+}
+.book-info-details .info-grid p strong {
+    min-width: 120px; /* Налаштовуємо для цієї секції */
 }
 
-.book-info-details p { /* Загальний текст в описі */
-    font-size: 1.05em;
-    color: #555; /* Трохи світліший */
-    margin-bottom: 10px;
+.book-description-text { /* Для контейнера з описом книги */
+    font-size: 1rem; /* Уніфікований розмір */
+    color: var(--text-color-secondary);
     line-height: 1.7;
+    margin-top: 10px; /* Відступ від заголовка "Опис" */
+    margin-bottom: 25px; /* Відступ до форми додавання в кошик */
 }
-.book-info-details p strong { /* Виділення в тексті опису */
-    color: #333; /* Темніший */
-    font-weight: 500;
-    margin-right: 5px;
+
+
+.add-to-cart-form { /* Клас для форми додавання в кошик */
+    margin-top: 20px; /* Відступ форми від опису/характеристик */
 }
+/* Стилі для кнопки .btn-generic.btn-positive.btn-lg беруться з style.css */
+
 
 /* Адаптивність для сторінки книги */
 @media (max-width: 768px) {
     .book-card-layout {
         flex-direction: column;
-        align-items: center;
+        align-items: center; /* Центрування блоків */
+        gap: 25px; /* Зменшено gap для мобільних */
     }
     .book-image-container {
-        max-width: 90%;
-        margin-bottom: 25px;
+        max-width: 85%; /* Зменшено для кращого вигляду */
+        margin-bottom: 20px; /* Зменшено */
+        flex-basis: auto; /* Скидаємо flex-basis */
     }
     .book-info-details {
-        text-align: center; /* Центрування тексту інформації на мобільних */
+        text-align: center; /* Центрування тексту інформації */
+        width: 100%; /* На всю ширину */
+        flex-basis: auto; /* Скидаємо flex-basis */
     }
+
+    /* Назва книги H3 (якщо вона є в .book-info-details) */
+    /*
     .book-info-details h3 {
-        font-size: 1.8em;
+        font-size: 1.6em; /* Зменшено для мобільних */
+    /* }
+    */
+
+    /* Адаптивні стилі для .price-highlight та .content-subtitle вже мають бути в style.css,
+       але якщо потрібні специфічні зміни розміру шрифту для цієї сторінки: */
+    .book-info-details .price-highlight {
+        font-size: 1.8em; /* Зменшено для мобільних */
+        margin: 20px 0;
     }
-    /* Кнопка "Додати до кошика" (.btn-generic.btn-positive) може потребувати width: 100% тут */
-    .book-info-details .btn-generic.btn-positive {
-        width: 100%;
-        padding: 12px; /* Менший padding для мобільних */
-        font-size: 1.05em;
+    .book-info-details .content-subtitle {
+        font-size: 1.15em; /* Зменшено */
+        margin-top: 20px;
+        margin-bottom: 8px;
+    }
+
+    /* Кнопка "Додати до кошика" */
+    .book-info-details .add-to-cart-form .btn-generic.btn-positive.btn-lg {
+        width: 100%; /* Кнопка на всю ширину */
+        padding: 12px 15px; /* Адаптивний padding */
+        font-size: 1rem;    /* Адаптивний розмір шрифту */
+    }
+}
+
+@media (max-width: 480px) {
+    .book-image-container {
+        max-width: 95%; /* Ще трохи збільшено для дуже малих екранів */
     }
 }

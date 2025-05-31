@@ -2,160 +2,207 @@
 // Файл: catalog.php
 
 // 1. Підключення до бази даних
-include_once('includes/db.php'); //
+include_once('includes/db.php');
 
-// 2. Запуск сесії (header.php це вже робить)
-// if (session_status() == PHP_SESSION_NONE) {
-// session_start();
-// }
+// 2. Запуск сесії вже відбувається в header.php
 
 // 3. Ініціалізація змінних для повідомлень
-$message_cart = '';
+$page_alert_message = '';
+$page_alert_type = '';
+
 if (isset($_GET['message_cart'])) {
-    $message_cart = htmlspecialchars($_GET['message_cart']); //
+    $page_alert_message = htmlspecialchars($_GET['message_cart']);
+    $page_alert_type = 'success';
+} elseif (isset($_GET['message'])) { // Використовуємо elseif, щоб повідомлення не перезаписувалися
+    $page_alert_message = htmlspecialchars($_GET['message']);
+    // Визначаємо тип помилки більш надійно
+    if (strpos(strtolower($page_alert_message), 'помилка') !== false || strpos(strtolower($page_alert_message), 'error') !== false || strpos(strtolower($page_alert_message), 'не знайдено') !== false) {
+        $page_alert_type = 'danger';
+    } else {
+        $page_alert_type = 'info'; // За замовчуванням - інформаційне
+    }
 }
-$message_general = '';
-if (isset($_GET['message'])) {
-    $message_general = htmlspecialchars($_GET['message']); //
-}
+
 
 // 4. Обробка фільтрів
 $conditions = [];
 $params = [];
 $types = "";
 
-if (isset($_GET['genre']) && $_GET['genre'] !== '') {
-    $genre = $_GET['genre']; //
-    $conditions[] = "genre = ?"; //
-    $params[] = $genre; //
-    $types .= "s"; //
+$current_genre = isset($_GET['genre']) ? $_GET['genre'] : '';
+$current_author = isset($_GET['author']) ? $_GET['author'] : '';
+
+if ($current_genre !== '') {
+    $conditions[] = "genre = ?";
+    $params[] = $current_genre;
+    $types .= "s";
 }
 
-if (isset($_GET['author']) && $_GET['author'] !== '') {
-    $author = $_GET['author']; //
-    $conditions[] = "author = ?"; //
-    $params[] = $author; //
-    $types .= "s"; //
+if ($current_author !== '') {
+    $conditions[] = "author = ?";
+    $params[] = $current_author;
+    $types .= "s";
 }
 
 $sql_where = "";
 if (count($conditions) > 0) {
-    $sql_where = "WHERE " . implode(" AND ", $conditions); //
+    $sql_where = "WHERE " . implode(" AND ", $conditions);
 }
 
 // 5. Формування та виконання запиту для отримання книг
-$books_sql = "SELECT * FROM books $sql_where ORDER BY title ASC"; //
-$result = null;
+$books_sql = "SELECT * FROM books $sql_where ORDER BY title ASC";
+$result = null; // Ініціалізуємо $result
 
 if (!empty($params)) {
-    $stmt_books = $conn->prepare($books_sql); //
+    $stmt_books = $conn->prepare($books_sql);
     if ($stmt_books) {
-        $stmt_books->bind_param($types, ...$params); //
-        $stmt_books->execute(); //
-        $result = $stmt_books->get_result(); //
+        $stmt_books->bind_param($types, ...$params);
+        $stmt_books->execute();
+        $result = $stmt_books->get_result();
+        if (!$result && empty($page_alert_message)) { // Якщо запит не вдався і немає іншого повідомлення
+            $page_alert_message = "Виникла помилка при завантаженні каталогу (stmt).";
+            $page_alert_type = 'danger';
+        }
     } else {
-        error_log("Помилка підготовки SQL-запиту (каталог): " . $conn->error); //
-        $message_general = "Виникла помилка при завантаженні каталогу."; //
+        error_log("Помилка підготовки SQL-запиту (каталог): " . $conn->error);
+        if (empty($page_alert_message)) {
+            $page_alert_message = "Виникла помилка при завантаженні каталогу.";
+            $page_alert_type = 'danger';
+        }
     }
 } else {
-    $result = mysqli_query($conn, $books_sql); //
-    if (!$result) {
-        error_log("Помилка SQL-запиту (каталог): " . mysqli_error($conn)); //
-        $message_general = "Виникла помилка при завантаженні каталогу."; //
+    $query_result = mysqli_query($conn, $books_sql); // Використовуємо іншу змінну, щоб не конфліктувати з $result
+    if ($query_result) {
+        $result = $query_result;
+    } else {
+        error_log("Помилка SQL-запиту (каталог): " . mysqli_error($conn));
+        if (empty($page_alert_message)) {
+            $page_alert_message = "Виникла помилка при завантаженні каталогу.";
+            $page_alert_type = 'danger';
+        }
     }
 }
 
 // 6. Отримання списку жанрів та авторів для фільтрів
-$genres_result_q = mysqli_query($conn, "SELECT DISTINCT genre FROM books WHERE genre IS NOT NULL AND genre != '' ORDER BY genre ASC"); //
-$authors_result_q = mysqli_query($conn, "SELECT DISTINCT author FROM books WHERE author IS NOT NULL AND author != '' ORDER BY author ASC"); //
+$genres_result_q = mysqli_query($conn, "SELECT DISTINCT genre FROM books WHERE genre IS NOT NULL AND genre != '' ORDER BY genre ASC");
+$authors_result_q = mysqli_query($conn, "SELECT DISTINCT author FROM books WHERE author IS NOT NULL AND author != '' ORDER BY author ASC");
 
 // 7. Встановлення заголовка сторінки
-$page_title = "Каталог книг - Інтернет-магазин книг"; //
+$page_title = "Каталог книг - Інтернет-магазин книг";
 
-// 8. ПІДКЛЮЧЕННЯ ХЕДЕРА
-// header.php тепер автоматично підключає css/style.css та css/catalog.css (якщо він існує)
-include_once('includes/header.php'); //
+// 8. Підключаємо хедер
+include_once('includes/header.php');
 ?>
 
-<?php // 9. Рядок <link rel="stylesheet" href="css/catalog.css"> ВИДАЛЕНО, оскільки header.php це робить ?>
-
-<?php // 10. HTML-контент сторінки ?>
-    <div class="section-title-container"><h2>Каталог книг</h2></div> <?php // ?>
-
-<?php if (!empty($message_cart)): ?>
-    <p class="success-message"><?php echo $message_cart; ?></p> <?php // ?>
+<?php // Виведення повідомлень (якщо є) ?>
+<?php if (!empty($page_alert_message) && !empty($page_alert_type)): ?>
+    <div class="alert alert-<?php echo $page_alert_type; ?>">
+        <span class="alert-icon">
+            <?php
+            // Проста логіка для іконок
+            if ($page_alert_type === 'success') echo '&#10004;';
+            elseif ($page_alert_type === 'danger') echo '&#10008;';
+            else echo '&#8505;';
+            ?>
+        </span>
+        <?php echo $page_alert_message; ?>
+    </div>
 <?php endif; ?>
-<?php if (!empty($message_general)): ?>
-    <p class="message error-message"><?php echo $message_general; ?></p> <?php // ?>
-<?php endif; ?>
 
-<?php // Змінюємо клас для форми фільтрів для відповідності оновленому CSS ?>
-    <form method="GET" action="catalog.php" class="filter-form-panel"> <?php // ?>
-        <label for="genre">Фільтрувати за жанром:</label> <?php // ?>
-        <select name="genre" id="genre" onchange="this.form.submit()"> <?php // ?>
-            <option value="">Усі жанри</option> <?php // ?>
-            <?php if($genres_result_q && mysqli_num_rows($genres_result_q) > 0) : while ($row = mysqli_fetch_assoc($genres_result_q)): ?>
-                <option value="<?php echo htmlspecialchars($row['genre']); ?>" <?php if (isset($_GET['genre']) && $_GET['genre'] == $row['genre']) echo 'selected'; ?>> <?php // ?>
-                    <?php echo htmlspecialchars($row['genre']); ?>
-                </option>
-            <?php endwhile; endif; ?>
-        </select>
+    <div class="section-title-container"><h2>Каталог книг</h2></div>
 
-        <label for="author">Фільтрувати за автором:</label> <?php // ?>
-        <select name="author" id="author" onchange="this.form.submit()"> <?php // ?>
-            <option value="">Усі автори</option> <?php // ?>
-            <?php if($authors_result_q && mysqli_num_rows($authors_result_q) > 0) : while ($row = mysqli_fetch_assoc($authors_result_q)): ?>
-                <option value="<?php echo htmlspecialchars($row['author']); ?>" <?php if (isset($_GET['author']) && $_GET['author'] == $row['author']) echo 'selected'; ?>> <?php // ?>
-                    <?php echo htmlspecialchars($row['author']); ?>
-                </option>
-            <?php endwhile; endif; ?>
-        </select>
-        <?php if (!empty($_GET['genre']) || !empty($_GET['author'])): ?>
-            <?php // Змінюємо клас для посилання "Скинути фільтри" ?>
-            <a href="catalog.php" class="reset-filters-button">Скинути фільтри</a> <?php // ?>
+<?php // Форма фільтрів. Клас filter-form-panel залишаємо, його стилі є в catalog.css і можуть бути унікальними. ?>
+    <form method="GET" action="catalog.php" class="filter-form-panel panel-container"> <?php // Додано panel-container для уніфікованого вигляду ?>
+        <div class="form-group"> <?php // Обгортаємо для кращої структури (опціонально для горизонтальних фільтрів) ?>
+            <label for="genre">Фільтрувати за жанром:</label>
+            <select name="genre" id="genre" onchange="this.form.submit()">
+                <option value="">Усі жанри</option>
+                <?php if($genres_result_q && mysqli_num_rows($genres_result_q) > 0) : while ($row_genre = mysqli_fetch_assoc($genres_result_q)): ?>
+                    <option value="<?php echo htmlspecialchars($row_genre['genre']); ?>" <?php if ($current_genre == $row_genre['genre']) echo 'selected'; ?>>
+                        <?php echo htmlspecialchars($row_genre['genre']); ?>
+                    </option>
+                <?php endwhile; endif; ?>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="author">Фільтрувати за автором:</label>
+            <select name="author" id="author" onchange="this.form.submit()">
+                <option value="">Усі автори</option>
+                <?php if($authors_result_q && mysqli_num_rows($authors_result_q) > 0) : while ($row_author = mysqli_fetch_assoc($authors_result_q)): ?>
+                    <option value="<?php echo htmlspecialchars($row_author['author']); ?>" <?php if ($current_author == $row_author['author']) echo 'selected'; ?>>
+                        <?php echo htmlspecialchars($row_author['author']); ?>
+                    </option>
+                <?php endwhile; endif; ?>
+            </select>
+        </div>
+
+        <?php if ($current_genre !== '' || $current_author !== ''): ?>
+            <a href="catalog.php" class="btn-generic btn-outline-secondary btn-sm">
+                <span class="icon" aria-hidden="true">🔄</span> Скинути фільтри
+            </a>
         <?php endif; ?>
     </form>
 
-    <div class="books"> <?php // ?>
+    <div class="books">
         <?php if ($result && mysqli_num_rows($result) > 0): ?>
             <?php while ($book = mysqli_fetch_assoc($result)): ?>
-                <div class="book"> <?php // ?>
-                    <a href="book.php?id=<?php echo $book['id']; ?>">
-                        <img src="uploads/<?php echo htmlspecialchars($book['image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">  <?php // ?>
+                <div class="book">
+                    <a href="book.php?id=<?php echo $book['id']; ?>" class="book-image-link">
+                        <img src="uploads/<?php echo htmlspecialchars($book['image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
                     </a>
-                    <h3><a href="book.php?id=<?php echo $book['id']; ?>"><?php echo htmlspecialchars($book['title']); ?></a></h3> <?php // ?>
-                    <p><strong>Автор:</strong> <?php echo htmlspecialchars($book['author']); ?></p> <?php // ?>
-                    <p><strong>Жанр:</strong> <?php echo htmlspecialchars($book['genre']); ?></p> <?php // ?>
-                    <p class="book-description"><?php echo mb_substr(htmlspecialchars(strip_tags($book['description'])), 0, 80); ?>...</p> <?php // ?>
-                    <p><strong>Ціна:</strong> <?php echo number_format($book['price'], 2); ?> грн</p> <?php // ?>
+                    <h3><a href="book.php?id=<?php echo $book['id']; ?>"><?php echo htmlspecialchars($book['title']); ?></a></h3>
+                    <p class="book-author"><strong>Автор:</strong> <?php echo htmlspecialchars($book['author']); ?></p>
+                    <p class="book-genre"><strong>Жанр:</strong> <?php echo htmlspecialchars($book['genre']); ?></p>
+                    <?php /* <p class="book-description"><?php echo mb_substr(htmlspecialchars(strip_tags($book['description'])), 0, 80); ?>...</p> */ // Опис можна прибрати з каталогу для компактності, він є на сторінці книги ?>
+                    <p class="book-price"><?php echo number_format($book['price'], 2); ?> грн</p>
 
-                    <?php // Видаляємо інлайновий стиль style="margin-top: 10px;" з форми ?>
-                    <form action="add_to_cart.php" method="POST"> <?php // ?>
-                        <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>"> <?php // ?>
-                        <button type="submit" class="btn-add-to-cart-small">Додати до кошика</button> <?php // ?>
+                    <form action="add_to_cart.php" method="POST">
+                        <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
+                        <button type="submit" class="btn-generic btn-primary btn-sm btn-full-width">
+                            <span class="icon" aria-hidden="true">🛒</span> Додати до кошика
+                        </button>
                     </form>
-                    <p><a href="book.php?id=<?php echo $book['id']; ?>" class="details-link">Детальніше</a></p> <?php // ?>
+                    <a href="book.php?id=<?php echo $book['id']; ?>" class="details-link">Детальніше</a>
                 </div>
             <?php endwhile; ?>
         <?php else: ?>
-            <?php // Замінюємо інлайновий стиль на клас .no-items-info ?>
-            <p class="no-items-info"> <?php // ?>
-                <?php echo (empty($params) && !$result) ? "Виникла помилка при завантаженні каталогу." : "За заданими критеріями книги не знайдені."; ?>
+            <p class="no-items-info">
+                <?php
+                // Покращене повідомлення, якщо книги не знайдено або сталася помилка
+                if (!empty($page_alert_message) && $page_alert_type === 'danger') {
+                    echo $page_alert_message; // Якщо вже є повідомлення про помилку завантаження
+                } elseif (!empty($params)) { // Якщо застосовані фільтри
+                    echo "За заданими критеріями книги не знайдені.";
+                } else { // Якщо фільтри не застосовані і немає помилок завантаження
+                    echo "Наразі книги відсутні в каталозі.";
+                }
+                ?>
             </p>
         <?php endif; ?>
     </div>
 
 <?php
 // 11. Звільнення результатів та закриття з'єднань
-if (isset($stmt_books) && $stmt_books instanceof mysqli_stmt) $stmt_books->close(); //
-if (isset($result) && $result instanceof mysqli_result) mysqli_free_result($result); //
-if (isset($genres_result_q) && $genres_result_q instanceof mysqli_result) mysqli_free_result($genres_result_q); //
-if (isset($authors_result_q) && $authors_result_q instanceof mysqli_result) mysqli_free_result($authors_result_q); //
+if (isset($stmt_books) && $stmt_books instanceof mysqli_stmt) {
+    $stmt_books->close();
+}
+// $result звільняється автоматично, якщо він був результатом $stmt_books->get_result()
+// або якщо це результат mysqli_query, то його треба звільнити явно
+if (isset($result) && $result instanceof mysqli_result && !isset($stmt_books)) { // Звільняємо, тільки якщо це результат mysqli_query
+    mysqli_free_result($result);
+}
+if (isset($genres_result_q) && $genres_result_q instanceof mysqli_result) {
+    mysqli_free_result($genres_result_q);
+}
+if (isset($authors_result_q) && $authors_result_q instanceof mysqli_result) {
+    mysqli_free_result($authors_result_q);
+}
 
 if (isset($conn)) {
-    mysqli_close($conn); //
+    mysqli_close($conn);
 }
 
 // 12. Підключення футера
-include_once('includes/footer.php'); //
+include_once('includes/footer.php');
 ?>

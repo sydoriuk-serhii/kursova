@@ -2,169 +2,202 @@
 // Файл: checkout.php
 
 // 1. Підключення до бази даних
-include_once('includes/db.php'); //
+include_once('includes/db.php');
 
-// 2. Запуск сесії
-if (session_status() == PHP_SESSION_NONE) {
-    session_start(); //
-}
+// 2. Запуск сесії (вже в header.php)
+
+// Ініціалізація змінної для повідомлень про помилки
+$page_alert_message = ''; // Використовуємо цю змінну для всіх повідомлень на сторінці
+$page_alert_type = '';
 
 // 3. Функція обчислення загальної суми
 function calculateTotalCheckout() {
-    $total = 0;
+    $total_checkout = 0; // Змінено ім'я змінної
     if (!empty($_SESSION['cart'])) {
-        foreach ($_SESSION['cart'] as $item) {
-            $price = isset($item['price']) ? $item['price'] : 0; //
-            $quantity = isset($item['quantity']) ? $item['quantity'] : 1; //
-            $total += $price * $quantity; //
+        foreach ($_SESSION['cart'] as $item_checkout) { // Змінено ім'я змінної
+            $price_checkout = isset($item_checkout['price']) ? (float)$item_checkout['price'] : 0;
+            $quantity_checkout = isset($item_checkout['quantity']) ? (int)$item_checkout['quantity'] : 1;
+            $total_checkout += $price_checkout * $quantity_checkout;
         }
     }
-    return $total;
+    return $total_checkout;
 }
 
 // 4. Якщо кошик порожній, не дозволяємо оформлювати замовлення
 if (empty($_SESSION['cart'])) {
-    header("Location: cart.php?message=" . urlencode("Ваш кошик порожній. Неможливо оформити замовлення.")); //
+    // Перевіряємо, чи $conn існує, перш ніж використовувати mysqli_real_escape_string, хоча тут він не потрібен для urlencode
+    $cart_empty_msg = "Ваш кошик порожній. Неможливо оформити замовлення.";
+    if (isset($conn)) mysqli_close($conn); // Закриваємо з'єднання, якщо воно було відкрито
+    header("Location: cart.php?message=" . urlencode($cart_empty_msg));
     exit();
 }
 
 // 5. Обробка POST-запиту
-if ($_SERVER['REQUEST_METHOD'] == 'POST') { //
-    $name = mysqli_real_escape_string($conn, $_POST['name']); //
-    $email = mysqli_real_escape_string($conn, $_POST['email']); //
-    $address = mysqli_real_escape_string($conn, $_POST['address']); //
-    $phone = mysqli_real_escape_string($conn, $_POST['phone']); //
-    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : NULL; //
-    $total = calculateTotalCheckout(); //
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Використовуємо trim для видалення зайвих пробілів
+    $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+    $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+    $address = isset($_POST['address']) ? trim($_POST['address']) : '';
+    $phone = isset($_POST['phone']) ? trim($_POST['phone']) : '';
 
-    if (empty($name) || empty($email) || empty($address) || empty($phone) || !filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match("/^\+380[0-9]{9}$/", $phone)) { //
-        $error_message = "Будь ласка, заповніть усі поля коректно. Телефон має бути у форматі +380xxxxxxxxx."; //
+    // mysqli_real_escape_string тут не потрібен, оскільки дані йдуть у bind_param
+    // $name_db = mysqli_real_escape_string($conn, $name);
+    // $email_db = mysqli_real_escape_string($conn, $email);
+    // $address_db = mysqli_real_escape_string($conn, $address);
+    // $phone_db = mysqli_real_escape_string($conn, $phone);
+
+    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : NULL;
+    $total = calculateTotalCheckout();
+
+    // Валідація
+    if (empty($name) || empty($email) || empty($address) || empty($phone)) {
+        $page_alert_message = "Будь ласка, заповніть усі обов'язкові поля.";
+        $page_alert_type = 'danger';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $page_alert_message = "Некоректний формат електронної пошти.";
+        $page_alert_type = 'danger';
+    } elseif (!preg_match("/^\+380[0-9]{9}$/", $phone)) {
+        $page_alert_message = "Телефон має бути у форматі +380xxxxxxxxx (наприклад, +380991234567).";
+        $page_alert_type = 'danger';
     } else {
-        $order_sql_insert = "INSERT INTO orders (user_id, name, email, address, phone, total, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())"; //
-        $stmt_order = $conn->prepare($order_sql_insert); //
+        $order_sql_insert = "INSERT INTO orders (user_id, name, email, address, phone, total, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())";
+        $stmt_order = $conn->prepare($order_sql_insert);
 
         if ($stmt_order) {
-            $stmt_order->bind_param(is_null($user_id) ? "sssssd" : "issssd", $user_id, $name, $email, $address, $phone, $total); //
+            // Використовуємо очищені значення $name, $email, $address, $phone
+            $stmt_order->bind_param(is_null($user_id) ? "sssssd" : "issssd", $user_id, $name, $email, $address, $phone, $total);
 
-            if ($stmt_order->execute()) { //
-                $order_id = mysqli_insert_id($conn); //
+            if ($stmt_order->execute()) {
+                $order_id = mysqli_insert_id($conn);
 
                 if (!empty($_SESSION['cart'])) {
-                    $item_sql_insert = "INSERT INTO order_items (order_id, book_id, quantity, price) VALUES (?, ?, ?, ?)"; //
-                    $stmt_item = $conn->prepare($item_sql_insert); //
+                    $item_sql_insert = "INSERT INTO order_items (order_id, book_id, quantity, price) VALUES (?, ?, ?, ?)";
+                    $stmt_item = $conn->prepare($item_sql_insert);
 
-                    foreach ($_SESSION['cart'] as $item) {
-                        $book_id = $item['id']; //
-                        $quantity = isset($item['quantity']) ? $item['quantity'] : 1; //
-                        $price = isset($item['price']) ? $item['price'] : 0; //
-                        $stmt_item->bind_param("iiid", $order_id, $book_id, $quantity, $price); //
-                        $stmt_item->execute(); //
+                    if($stmt_item) { // Додана перевірка успішності prepare
+                        foreach ($_SESSION['cart'] as $cart_item_process) { // Змінено ім'я змінної
+                            $book_id_process = $cart_item_process['id'];
+                            $quantity_process = isset($cart_item_process['quantity']) ? (int)$cart_item_process['quantity'] : 1;
+                            $price_process = isset($cart_item_process['price']) ? (float)$cart_item_process['price'] : 0;
+                            $stmt_item->bind_param("iiid", $order_id, $book_id_process, $quantity_process, $price_process);
+                            $stmt_item->execute();
+                        }
+                        $stmt_item->close();
+                    } else {
+                        // Обробка помилки підготовки запиту для order_items
+                        error_log("Помилка підготовки запиту order_items: " . $conn->error);
+                        // Можливо, варто відкотити транзакцію, якщо використовується, або видалити створене замовлення
+                        // Для простоти, поки що просто логуємо
+                        $page_alert_message = "Сталася помилка при збереженні деталей замовлення.";
+                        $page_alert_type = 'danger';
                     }
-                    $stmt_item->close(); //
                 }
-                unset($_SESSION['cart']); //
-                $stmt_order->close(); //
-                mysqli_close($conn); //
-                header("Location: index.php?success_order=true&order_id=" . $order_id . "&customer_name=" . urlencode($name)); //
-                exit();
+
+                // Якщо не було помилок з order_items, продовжуємо
+                if (empty($page_alert_message)) {
+                    unset($_SESSION['cart']);
+                    $stmt_order->close();
+                    mysqli_close($conn);
+                    header("Location: index.php?success_order=true&order_id=" . $order_id . "&customer_name=" . urlencode($name));
+                    exit();
+                }
             } else {
-                $error_message = "Помилка при створенні замовлення: " . $stmt_order->error; //
+                $page_alert_message = "Помилка при створенні замовлення: " . htmlspecialchars($stmt_order->error);
+                $page_alert_type = 'danger';
             }
-            // $stmt_order->close(); // Цей рядок вже є вище, тут він зайвий
+            if ($stmt_order instanceof mysqli_stmt) $stmt_order->close(); // Перевірка, чи $stmt_order ще існує
         } else {
-            $error_message = "Помилка підготовки запиту: " . $conn->error; //
+            $page_alert_message = "Помилка підготовки запиту для створення замовлення: " . htmlspecialchars($conn->error);
+            $page_alert_type = 'danger';
         }
     }
 }
 
 // 6. Встановлюємо заголовок сторінки
-$page_title = "Оформлення замовлення - Інтернет-магазин книг"; //
+$page_title = "Оформлення замовлення - Інтернет-магазин книг";
 
-// 7. ПІДКЛЮЧАЄМО ХЕДЕР
-// header.php тепер автоматично підключає css/style.css та css/checkout.css (якщо він існує)
-include_once('includes/header.php'); //
+// 7. Підключаємо хедер
+include_once('includes/header.php');
 ?>
 
-<?php // 8. Рядок <link rel="stylesheet" href="css/checkout.css"> ВИДАЛЕНО ?>
-
 <?php // 9. Починаємо HTML-розмітку ?>
-<?php // Змінюємо клас контейнера заголовка ?>
-    <div class="section-title-container"><h2>Оформлення замовлення</h2></div> <?php // ?>
+    <div class="section-title-container"><h2>Оформлення замовлення</h2></div>
 
-    <div class="checkout-navigation-buttons"> <?php // ?>
-        <?php // Видаляємо інлайновий стиль та додаємо клас .btn-secondary ?>
-        <button onclick="window.location.href='cart.php'" class="btn-generic btn-secondary">Повернутися до кошика</button> <?php // ?>
+<?php // Виведення повідомлень (якщо є) ?>
+<?php if (!empty($page_alert_message) && !empty($page_alert_type)): ?>
+    <div class="alert alert-<?php echo $page_alert_type; ?>">
+        <span class="alert-icon">
+            <?php
+            if ($page_alert_type === 'danger') echo '&#10008;';
+            else echo '&#8505;';
+            ?>
+        </span>
+        <?php echo $page_alert_message; ?>
+    </div>
+<?php endif; ?>
+
+    <div class="checkout-navigation-buttons" style="margin-bottom: 20px;"> <?php // Додано відступ знизу ?>
+        <button onclick="window.location.href='cart.php'" class="btn-generic btn-outline-secondary">
+            <span class="icon" aria-hidden="true">❮</span> Повернутися до кошика
+        </button>
     </div>
 
-<?php // Змінюємо клас контейнера форми ?>
-    <section class="panel-container"> <?php // ?>
-        <form action="checkout.php" method="POST" class="checkout-form"> <?php // ?>
-            <?php if (isset($error_message)): ?>
-                <p class="error-message"><?php echo $error_message; ?></p> <?php // ?>
-            <?php endif; ?>
+    <section class="panel-container checkout-form-panel"> <?php // Додано специфічний клас для можливих налаштувань ?>
+        <form action="checkout.php" method="POST" class="checkout-form">
 
-            <label for="name">Ім'я та Прізвище:</label> <?php // ?>
-            <input type="text" id="name" name="name" value="<?php
-            if (isset($_POST['name'])) {
-                echo htmlspecialchars($_POST['name']); //
-            } elseif (isset($_SESSION['username']) && $_SESSION['role'] !== 'admin') {
-                echo htmlspecialchars($_SESSION['username']); //
-            }
-            ?>" required>
+            <div class="form-group">
+                <label for="name">Ім'я та Прізвище:</label>
+                <input type="text" id="name" name="name" value="<?php
+                // Використовуємо $name, якщо форма була відправлена і є помилка, інакше з сесії або порожнє
+                echo htmlspecialchars(isset($_POST['name']) ? $_POST['name'] : (isset($_SESSION['username']) && $_SESSION['role'] !== 'admin' ? $_SESSION['username'] : ''));
+                ?>" required>
+            </div>
 
-            <label for="email">Електронна пошта:</label> <?php // ?>
-            <input type="email" id="email" name="email" value="<?php
-            if (isset($_POST['email'])) {
-                echo htmlspecialchars($_POST['email']); //
-            } elseif (isset($_SESSION['user_id'])) {
-                $current_user_id_for_email = $_SESSION['user_id']; //
-                $user_email_query_checkout = $conn->prepare("SELECT email FROM users WHERE id = ?"); //
-                if ($user_email_query_checkout) {
-                    $user_email_query_checkout->bind_param("i", $current_user_id_for_email); //
-                    $user_email_query_checkout->execute(); //
-                    $user_email_result_checkout = $user_email_query_checkout->get_result(); //
-                    if ($user_email_data_checkout = $user_email_result_checkout->fetch_assoc()) { //
-                        echo htmlspecialchars($user_email_data_checkout['email']); //
-                    }
-                    $user_email_query_checkout->close(); //
-                }
-            }
-            ?>" required>
+            <div class="form-group">
+                <label for="email">Електронна пошта:</label>
+                <input type="email" id="email" name="email" value="<?php
+                // Використовуємо $_SESSION['user_email'], яке ми домовилися зберігати
+                echo htmlspecialchars(isset($_POST['email']) ? $_POST['email'] : (isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''));
+                ?>" required>
+            </div>
 
-            <label for="address">Адреса доставки (Місто, вулиця, будинок, квартира):</label> <?php // ?>
-            <textarea id="address" name="address" rows="4" required><?php echo isset($_POST['address']) ? htmlspecialchars($_POST['address']) : ''; ?></textarea> <?php // ?>
+            <div class="form-group">
+                <label for="address">Адреса доставки (Місто, вулиця, будинок, квартира):</label>
+                <textarea id="address" name="address" rows="3" required><?php echo htmlspecialchars(isset($_POST['address']) ? $_POST['address'] : ''); ?></textarea> <?php // Зменшено rows ?>
+            </div>
 
-            <label for="phone">Телефон (у форматі +380xxxxxxxxx):</label> <?php // ?>
-            <input type="tel" id="phone" name="phone" pattern="^\+380[0-9]{9}$" placeholder="+380xxxxxxxxx" value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>" required> <?php // ?>
+            <div class="form-group">
+                <label for="phone">Телефон (у форматі +380xxxxxxxxx):</label>
+                <input type="tel" id="phone" name="phone" pattern="^\+380[0-9]{9}$" placeholder="+380991234567" value="<?php echo htmlspecialchars(isset($_POST['phone']) ? $_POST['phone'] : ''); ?>" required>
+            </div>
 
-            <?php // Змінюємо клас блоку "Склад замовлення" ?>
-            <div class="order-summary-details"> <?php // ?>
-                <h3>Склад замовлення:</h3> <?php // ?>
+            <div class="order-summary-details">
+                <h3 class="panel-section-title">Склад замовлення:</h3> <?php // Використовуємо уніфікований клас ?>
                 <?php if (!empty($_SESSION['cart'])): ?>
                     <ul>
-                        <?php foreach ($_SESSION['cart'] as $item): ?>
+                        <?php foreach ($_SESSION['cart'] as $summary_item): // Змінено ім'я змінної ?>
                             <li>
-                                <span><?php echo htmlspecialchars($item['title']); ?> (<?php echo $item['quantity']; ?> шт.)</span> <?php // ?>
-                                <span><?php echo number_format($item['price'] * $item['quantity'], 2); ?> грн</span> <?php // ?>
+                                <span><?php echo htmlspecialchars($summary_item['title']); ?> (<?php echo (int)$summary_item['quantity']; ?> шт.)</span>
+                                <span><?php echo number_format((float)$summary_item['price'] * (int)$summary_item['quantity'], 2); ?> грн</span>
                             </li>
                         <?php endforeach; ?>
                     </ul>
-                    <?php // Додаємо клас до абзацу з загальною сумою ?>
-                    <p class="total-amount"><strong>Загальна сума до сплати:</strong> <?php echo number_format(calculateTotalCheckout(), 2); ?> грн</p> <?php // ?>
+                    <p class="total-amount"><strong>Загальна сума до сплати: <?php echo number_format(calculateTotalCheckout(), 2); ?> грн</strong></p> <?php // Зроблено жирнішим ?>
                 <?php endif; ?>
             </div>
 
-            <?php // Додаємо класи .btn-positive та .btn-full-width до кнопки ?>
-            <button type="submit" class="btn-generic btn-positive btn-full-width">Підтвердити замовлення</button> <?php // ?>
+            <button type="submit" class="btn-generic btn-positive btn-lg btn-full-width" style="margin-top: 25px;"> <?php // Додано btn-lg та відступ ?>
+                <span class="icon" aria-hidden="true">✔</span> Підтвердити замовлення
+            </button>
         </form>
     </section>
 
 <?php
-// 10. Закриваємо з'єднання з БД
-if (isset($conn) && mysqli_ping($conn)) {
-    mysqli_close($conn); //
+// 10. Закриваємо з'єднання з БД, тільки якщо воно ще існує і активне
+if (isset($conn) && $conn instanceof mysqli && mysqli_ping($conn)) {
+    mysqli_close($conn);
 }
 
 // 11. Підключаємо футер
-include_once('includes/footer.php'); //
+include_once('includes/footer.php');
 ?>

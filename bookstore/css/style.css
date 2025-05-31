@@ -1,78 +1,524 @@
-/* === ДОДАТИ АБО МОДИФІКУВАТИ В style.css === */
+/* === bookstore/css/style.css === */
+
+/* CSS Змінні (Визначення кольорів, радіусів, шрифтів) */
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-gray: #f8f9fa;
+    --medium-gray: #e9ecef;
+    --dark-gray: #6c757d;
+    --text-color-primary: #212529; /* Основний колір тексту */
+    --text-color-secondary: #495057; /* Другорядний колір тексту */
+    --text-color-muted: #6c757d;   /* Приглушений колір тексту */
+    --white-color: #fff;
+    --border-color: #dee2e6;
+
+    --border-radius-small: 0.2rem;  /* 3.2px, якщо базовий шрифт 16px */
+    --border-radius-medium: 0.375rem; /* 6px */
+    --border-radius-large: 0.5rem;   /* 8px */
+
+    --font-family-sans-serif: 'Roboto', sans-serif;
+    --font-size-base: 1rem; /* 16px */
+    --line-height-base: 1.6;
+
+    --box-shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
+    --box-shadow-md: 0 5px 15px rgba(0,0,0,0.08);
+    --box-shadow-lg: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* Глобальні стилі */
+body {
+    font-family: var(--font-family-sans-serif);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    color: var(--text-color-primary);
+    background-color: var(--light-gray);
+    margin: 0;
+    padding: 0;
+}
+
+.site-main-content {
+    padding: 25px 15px; /* Збільшено вертикальний відступ */
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Хедер */
+header {
+    background-color: var(--white-color);
+    padding: 15px 25px; /* Збільшено горизонтальний відступ */
+    box-shadow: var(--box-shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+}
+
+header h1 {
+    margin: 0; /* Забрати дефолтний відступ у h1 */
+}
+
+header h1 a.site-title-link {
+    color: var(--text-color-primary);
+    text-decoration: none;
+    font-size: 1.75em; /* Трохи збільшено */
+    font-weight: 700;
+}
+
+header nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center; /* Вирівнювання по центру для елементів навігації */
+}
+
+header nav ul li {
+    margin-left: 25px; /* Збільшено відстань */
+}
+
+header nav ul li:first-child {
+    margin-left: 0;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color: var(--text-color-secondary);
+    font-weight: 500;
+    padding: 8px 0; /* Додано вертикальний padding для кращої клікабельності */
+    display: inline-block; /* Для padding */
+    transition: color 0.2s ease;
+}
+
+header nav ul li a:hover,
+header nav ul li a.active {
+    color: var(--primary-color);
+}
+header nav ul li a.active {
+    font-weight: 700;
+    /* border-bottom: 2px solid var(--primary-color); /* Альтернативний варіант виділення */
+}
+
+/* Адаптивність хедера */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    header h1 a.site-title-link {
+        margin-bottom: 10px; /* Відступ від назви до меню на мобілках */
+    }
+    header nav {
+        width: 100%; /* Меню на всю ширину */
+    }
+    header nav ul {
+        flex-direction: column;
+        width: 100%;
+    }
+    header nav ul li {
+        margin-left: 0;
+        margin-bottom: 5px; /* Менший відступ між пунктами меню */
+        width: 100%;
+    }
+    header nav ul li a {
+        padding: 10px 5px; /* Збільшено padding для зручності на мобілках */
+        border-bottom: 1px solid var(--medium-gray); /* Розділювач між пунктами */
+    }
+    header nav ul li:last-child a {
+        border-bottom: none;
+    }
+}
+
+/* Футер */
+footer {
+    text-align: center;
+    padding: 30px 15px; /* Збільшено padding */
+    background-color: #343a40;
+    color: var(--light-gray);
+    margin-top: 40px;
+}
+footer p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.fixed-bottom-nav {
+    position: fixed;
+    bottom: 20px; /* Трохи вище */
+    right: 20px;
+    z-index: 1000;
+}
+.btn-back-fixed { /* Клас для кнопки "Назад", якщо потрібні специфічні стилі крім .btn-generic */
+    box-shadow: var(--box-shadow-md);
+}
+
+
+/* Система повідомлень (Alerts) */
+.alert {
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-medium);
+    display: flex;
+    align-items: center;
+    font-size: 0.95em;
+    box-shadow: var(--box-shadow-sm);
+}
+.alert-icon {
+    margin-right: 12px; /* Збільшено */
+    font-size: 1.3em; /* Збільшено */
+    line-height: 1;
+}
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+.alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+.alert-link {
+    font-weight: bold;
+    color: inherit;
+    text-decoration: underline;
+}
+.alert-link:hover {
+    text-decoration: none;
+}
+
 
 /* Панелі та контейнери */
-.panel-container,
-.auth-form-container { /* Для форм логіну/реєстрації */
-    background-color: #fff;
-    padding: 30px 35px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+.panel-container { /* Модифіковано існуючий */
+    background-color: var(--white-color);
+    padding: 25px 30px; /* Змінено padding */
+    border-radius: var(--border-radius-large); /* Збільшено */
+    box-shadow: var(--box-shadow-md);
     margin: 30px auto;
 }
 
-.auth-form-container {
-    max-width: 480px;
+/* Форми аутентифікації */
+.auth-form-container { /* Модифіковано існуючий */
+    background-color: var(--white-color);
+    padding: 35px 40px; /* Збільшено padding */
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow-lg); /* Більш виразна тінь */
+    margin: 40px auto;
+    max-width: 450px; /* Трохи зменшено */
 }
 
-/* Модифікатори для кнопок (додаються до .btn-generic або form button) */
-.btn-positive,
-form button[type="submit"].btn-positive {
-    background-color: #28a745; /* Зелений */
-    color: white;
+/* Заголовки секцій */
+.section-title-container {
+    margin-bottom: 35px; /* Збільшено */
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: center;
 }
-.btn-positive:hover,
-form button[type="submit"].btn-positive:hover {
-    background-color: #218838;
+.section-title-container h2 {
+    font-size: 2.1em; /* Трохи збільшено */
+    font-weight: 700;
+    color: var(--text-color-primary);
+    margin: 0;
+}
+.section-title-container.text-left { text-align: left; }
+.section-title-container.no-border { border-bottom: none; }
+
+/* Заголовки всередині панелей */
+.panel-section-title { /* Модифіковано існуючий */
+    font-size: 1.7em; /* Збільшено для ієрархії */
+    font-weight: 500; /* Зменшено для контрасту з h2 */
+    color: var(--text-color-primary);
+    margin-top: 0; /* Забрати відступ зверху, якщо це перший елемент панелі */
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--medium-gray);
 }
 
-.btn-secondary,
-form button[type="submit"].btn-secondary {
-    background-color: #6c757d; /* Сірий */
-    color: white;
-}
-.btn-secondary:hover,
-form button[type="submit"].btn-secondary:hover {
-    background-color: #5a6268;
+/* Форми загальні */
+.form-group {
+    margin-bottom: 1.5rem; /* Збільшено */
 }
 
-.btn-danger,
-form button[type="submit"].btn-danger {
-    background-color: #dc3545; /* Червоний */
-    color: white;
-}
-.btn-danger:hover,
-form button[type="submit"].btn-danger:hover {
-    background-color: #c82333;
+label {
+    display: block; /* Змінено на block для розміщення над інпутом */
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
 }
 
-/* Посилання для дій (наприклад, видалення) */
-.action-link-danger {
-    color: #dc3545;
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+input[type="file"],
+textarea,
+select {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 0.85rem; /* Збільшено padding */
+    font-size: 0.95rem; /* Трохи зменшено */
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-color-secondary);
+    background-color: var(--white-color);
+    background-clip: padding-box;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-medium);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="file"]:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--primary-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+input[type="file"] {
+    padding: 0.5rem 0.85rem; /* Трохи інші відступи для file */
+}
+input[type="file"]:not(:disabled):not([readonly]) {
+    cursor: pointer;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px; /* Мінімальна висота */
+}
+
+select {
+    height: calc(1.5em + 1.2rem + 2px); /* Щоб висота співпадала з інпутами (1.2rem = 0.6rem * 2) */
+}
+
+.auth-alternate-action {
+    margin-top: 25px; /* Збільшено */
+    font-size: 0.9em;
+    color: var(--text-color-muted);
+    text-align: center;
+}
+.auth-alternate-action a {
+    color: var(--primary-color);
     text-decoration: none;
     font-weight: 500;
-    padding: 3px 5px; /* Невеликий padding для клікабельності */
-    border-radius: 3px;
-    transition: color 0.2s ease, background-color 0.2s ease;
 }
-.action-link-danger:hover {
-    color: #fff;
-    background-color: #dc3545;
+.auth-alternate-action a:hover {
+    text-decoration: underline;
 }
 
+/* Кнопки */
+.btn-generic {
+    display: inline-block;
+    font-weight: 500;
+    color: var(--text-color-primary);
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 0.6rem 1.2rem; /* Збільшено padding */
+    font-size: 0.95rem; /* Зменшено */
+    line-height: 1.5;
+    border-radius: var(--border-radius-medium);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    text-decoration: none;
+}
+.btn-generic:hover {
+    text-decoration: none;
+}
+.btn-generic:focus, .btn-generic.focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Загальний фокус для кнопок */
+}
+
+
+.btn-primary {
+    color: var(--white-color);
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.btn-primary:hover {
+    background-color: #0069d9; /* Темніший відтінок */
+    border-color: #0062cc;
+}
+
+.btn-positive { /* Існуючий, оновлений */
+    color: var(--white-color);
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+.btn-positive:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.btn-secondary { /* Існуючий, оновлений */
+    color: var(--white-color);
+    background-color: var(--dark-gray);
+    border-color: var(--dark-gray);
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.btn-danger { /* Існуючий, оновлений */
+    color: var(--white-color);
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.btn-warning {
+    color: var(--text-color-primary);
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+.btn-info {
+    color: var(--white-color);
+    background-color: var(--info-color);
+    border-color: var(--info-color);
+}
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+/* Контурні кнопки */
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.btn-outline-primary:hover {
+    color: var(--white-color);
+    background-color: var(--primary-color);
+}
+.btn-outline-secondary {
+    color: var(--dark-gray);
+    border-color: var(--dark-gray);
+}
+.btn-outline-secondary:hover {
+    color: var(--white-color);
+    background-color: var(--dark-gray);
+}
+/* ... аналогічно для .btn-outline-success, .btn-outline-danger тощо. */
+
+
+/* Розміри кнопок */
+.btn-sm {
+    padding: 0.3rem 0.6rem; /* Зменшено */
+    font-size: 0.8rem; /* Зменшено */
+    border-radius: var(--border-radius-small);
+}
+.btn-lg {
+    padding: 0.8rem 1.6rem; /* Збільшено */
+    font-size: 1.1rem; /* Збільшено */
+    border-radius: var(--border-radius-large);
+}
+
+.btn-full-width { /* Існуючий */
+    width: 100%;
+    display: block;
+}
+
+/* Кнопки у формах без явних класів (спроба уніфікації) */
+form button[type="submit"]:not([class*="btn-"]),
+form button[type="button"]:not([class*="btn-"]) {
+    /* Застосовуємо стилі .btn-generic та .btn-primary */
+    display: inline-block; font-weight: 500; color: var(--white-color); text-align: center;
+    vertical-align: middle; cursor: pointer; user-select: none;
+    background-color: var(--primary-color); border: 1px solid var(--primary-color);
+    padding: 0.6rem 1.2rem; font-size: 0.95rem; line-height: 1.5;
+    border-radius: var(--border-radius-medium);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+form button[type="submit"]:not([class*="btn-"]):hover,
+form button[type="button"]:not([class*="btn-"]):hover {
+    background-color: #0069d9; border-color: #0062cc;
+}
+
+
+/* Посилання для дій */
+.action-link {
+    font-weight: 500;
+    text-decoration: none;
+    padding: 3px 6px; /* Збільшено */
+    border-radius: var(--border-radius-small);
+    transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    vertical-align: middle;
+    display: inline-flex; /* Для вирівнювання іконки та тексту */
+    align-items: center;
+}
+.action-link .icon {
+    margin-right: 5px; /* Відстань між іконкою та текстом */
+    font-size: 0.9em; /* Розмір іконки відносно тексту */
+}
+
+.action-link-danger { /* Існуючий, оновлений */
+    color: var(--danger-color);
+}
+.action-link-danger:hover {
+    color: var(--white-color);
+    background-color: var(--danger-color);
+    box-shadow: 0 2px 4px rgba(220,53,69,0.4); /* Тінь для червоної кнопки */
+}
+
+.action-link-edit {
+    color: var(--warning-color);
+}
+.action-link-edit:hover {
+    color: var(--text-color-primary);
+    background-color: var(--warning-color);
+    box-shadow: 0 2px 4px rgba(255,193,7,0.4);
+}
+
+
 /* Повідомлення "Нічого не знайдено" */
-.no-items-info {
+.no-items-info { /* Модифіковано існуючий */
     text-align: center;
     width: 100%;
     font-size: 1.1em;
-    margin-top: 20px;
-    color: #6c757d; /* Як у .book p */
-    padding: 30px 20px;
-    background-color: #f8f9fa; /* Світлий фон */
-    border: 1px dashed #ced4da; /* Пунктирна рамка */
-    border-radius: 8px; /* Або 10px для повної уніфікації */
+    margin: 30px 0; /* Відступи зверху/знизу */
+    color: var(--text-color-muted);
+    padding: 40px 25px; /* Збільшено padding */
+    background-color: var(--white-color); /* Змінено фон для контрасту з .site-main-content */
+    border: 1px dashed var(--border-color);
+    border-radius: var(--border-radius-large);
 }
 .no-items-info a {
-    color: #007bff; /* Як у .details-link */
+    color: var(--primary-color);
     font-weight: 500;
     text-decoration: none;
 }
@@ -81,15 +527,15 @@ form button[type="submit"].btn-danger:hover {
 }
 
 /* Таблиці даних */
-.data-table-container {
+.data-table-container { /* Існуючий, невеликі зміни */
     overflow-x: auto;
-    background-color: #fff;
+    background-color: var(--white-color);
     padding: 20px;
-    border-radius: 10px; /* Уніфіковано */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.07); /* Легка тінь */
-    margin-top: 20px;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow-md);
+    margin-top: 25px;
 }
-.data-table {
+.data-table { /* Існуючий */
     width: 100%;
     border-collapse: collapse;
     margin: 0;
@@ -99,84 +545,180 @@ form button[type="submit"].btn-danger:hover {
 .data-table td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
 }
-.data-table th {
-    background-color: #f8f9fa;
-    color: #495057;
-    font-weight: 500;
+.data-table thead th { /* Стилізуємо заголовок таблиці окремо */
+    background-color: var(--light-gray);
+    color: var(--text-color-secondary);
+    font-weight: 500; /* Зменшено для менш "кричущого" вигляду */
     text-transform: uppercase;
-    font-size: 0.85em;
+    font-size: 0.8em; /* Зменшено */
     letter-spacing: 0.5px;
+    border-top: 1px solid var(--border-color); /* Додано верхню межу для заголовка */
+    border-bottom-width: 2px; /* Жирніша нижня межа для заголовка */
 }
 .data-table tbody tr:hover {
-    background-color: #f1f3f5;
+    background-color: #f1f3f5; /* Можна залишити або var(--light-gray) з невеликим затемненням */
 }
-.data-table td ul { /* Для вкладених списків у комірках */
+.data-table tbody tr:nth-child(even) { /* Чергування кольорів рядків */
+    /* background-color: #f9f9f9; */ /* Розкоментуйте, якщо потрібна "зебра" */
+}
+.data-table td ul { /* Існуючий */
     list-style-type: none;
     padding-left: 0;
     margin: 0;
 }
 .data-table td ul li {
     font-size: 0.9em;
-    padding: 2px 0; /* Менший padding для елементів списку */
-    color: #6c757d;
+    padding: 3px 0; /* Збільшено */
+    color: var(--text-color-muted);
 }
 .data-table td ul li:not(:last-child) {
-    margin-bottom: 2px;
+    margin-bottom: 3px; /* Збільшено */
 }
 
-/* Специфічні стилі для заголовків всередині панелей/секцій (не головний заголовок сторінки) */
-.panel-container h3, .auth-form-container h3, /* Якщо h3 використовується як підзаголовок всередині */
-.panel-section-title { /* Або спеціальний клас для таких заголовків */
-    font-size: 1.6em;
-    font-weight: 500;
-    color: #343a40;
-    margin-bottom: 25px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #e0e0e0; /* Світлий розділювач */
+/* Інформаційні сітки (як у профілі) */
+.info-grid { /* Існуючий */
+    /* Тут можна додати стилі для самого контейнера info-grid, якщо потрібно */
 }
-
-/* Для текстових блоків з міткою та значенням (як у профілі) */
-.info-grid {
-    /* Можна буде використовувати для .profile-info */
-}
-.info-grid p {
+.info-grid p { /* Існуючий, модифікований */
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* За замовчуванням, щоб мітка і значення були на одному рядку, якщо дозволяє ширина */
     align-items: baseline;
-    font-size: 1.05em; /* Базовий розмір тексту */
-    color: #495057; /* Колір значення */
-    margin-bottom: 10px; /* Відстань між рядками */
+    font-size: 1rem; /* Зменшено */
+    color: var(--text-color-secondary);
+    margin-bottom: 12px; /* Збільшено */
     line-height: 1.7;
+    padding: 8px 0; /* Додано padding для кращого візуального розділення */
+    border-bottom: 1px dotted var(--medium-gray); /* Розділювач між рядками */
 }
-.info-grid p strong { /* Мітка */
-    color: #343a40; /* Колір мітки */
+.info-grid p:last-child {
+    border-bottom: none; /* Забрати розділювач у останнього елемента */
+    margin-bottom: 0;
+}
+.info-grid p strong { /* Мітка */ /* Існуючий, модифікований */
+    color: var(--text-color-primary);
     font-weight: 500;
-    min-width: 180px; /* Щоб мітки вирівнювалися, можна налаштувати */
-    margin-right: 10px;
+    min-width: 160px; /* Зменшено, можна налаштувати */
+    margin-right: 15px; /* Збільшено */
     flex-shrink: 0;
+}
+@media (max-width: 576px) { /* Адаптивність для info-grid */
+    .info-grid p {
+        flex-direction: column; /* Мітка над значенням */
+        align-items: flex-start;
+    }
+    .info-grid p strong {
+        min-width: auto; /* Забрати фіксовану ширину */
+        margin-bottom: 3px; /* Відступ між міткою та значенням */
+    }
+}
+
+
+/* Картки книг */
+.books {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Трохи зменшено minmax */
+    gap: 25px;
+    margin-top: 20px;
+}
+.book {
+    background-color: var(--white-color);
+    border-radius: var(--border-radius-medium);
+    box-shadow: var(--box-shadow-md);
+    padding: 18px; /* Зменшено */
+    text-align: left; /* Змінено на left */
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.book:hover {
+    transform: translateY(-4px); /* Зменшено */
+    box-shadow: var(--box-shadow-lg);
+}
+.book a:hover { /* Загальний стиль для посилань в картці */
+    /* text-decoration: none; */ /* Залежно від дизайну */
+}
+.book .book-image-link { /* Посилання для зображення */
+    display: block;
+    text-align: center; /* Центрування зображення всередині посилання */
+}
+.book img {
+    max-width: 100%;
+    height: 200px; /* Зменшено */
+    object-fit: contain;
+    margin-bottom: 15px;
+    border-radius: var(--border-radius-small);
+    /* border: 1px solid var(--border-color); /* Можна прибрати, якщо тінь достатня */
+}
+.book h3 {
+    font-size: 1.1em; /* Зменшено */
+    margin-top: 0; /* Забрати відступ зверху, якщо є */
+    margin-bottom: 8px;
+    font-weight: 700; /* Зроблено жирнішим */
+    min-height: 2.4em; /* ~2 рядки */
+    line-height: 1.2em;
+    overflow: hidden;
+    /* text-overflow: ellipsis; */ /* Якщо потрібно обрізати */
+    /* display: -webkit-box; */
+    /* -webkit-line-clamp: 2; */
+    /* -webkit-box-orient: vertical; */
+}
+.book h3 a {
+    color: var(--text-color-primary);
+    text-decoration: none;
+}
+.book h3 a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+.book p {
+    font-size: 0.85em; /* Зменшено */
+    color: var(--text-color-muted);
+    margin-bottom: 6px; /* Зменшено */
+}
+.book .book-author, .book .book-genre { /* Якщо будуть окремі класи для автора/жанру */
+    /* Специфічні стилі */
+}
+.book .book-price { /* Клас для ціни */
+    font-size: 1.25em; /* Збільшено */
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 12px; /* Збільшено */
+    margin-top: auto; /* Притиснути ціну та кнопку вниз, якщо можливо */
+    padding-top: 8px; /* Відступ від тексту вище */
+}
+.book form {
+    margin-top: 10px; /* Відступ форми від ціни/опису */
+    /* margin-top: auto; /* Якщо кнопка завжди має бути внизу, а ціна вище */
+}
+.book .details-link {
+    font-size: 0.85em;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-block;
+    margin-top: 10px;
+}
+.book .details-link:hover {
+    text-decoration: underline;
 }
 
 /* Стилі для price та description title зі сторінки book.php */
-.price-highlight {
-    font-size: 2em;
+.price-highlight { /* Існуючий, модифікований */
+    font-size: 2.2em; /* Збільшено */
     font-weight: 700;
-    color: #007bff;
-    margin: 20px 0;
+    color: var(--primary-color);
+    margin: 25px 0; /* Збільшено */
     display: block;
 }
-
-.content-subtitle { /* Наприклад, для "Опис:" на сторінці книги */
-    font-size: 1.2em;
-    font-weight: 500;
-    color: #343a40;
-    margin-top: 25px;
-    margin-bottom: 8px;
-}
-
-/* Забезпечити, щоб стандартні кнопки форми займали всю ширину, якщо це потрібно часто */
-form button[type="submit"].btn-full-width {
-    width: 100%;
+.content-subtitle { /* Існуючий, модифікований */
+    font-size: 1.3em; /* Збільшено */
+    font-weight: 700; /* Зроблено жирнішим */
+    color: var(--text-color-primary);
+    margin-top: 30px; /* Збільшено */
+    margin-bottom: 10px; /* Збільшено */
+    padding-bottom: 5px; /* Невелике підкреслення */
+    /* border-bottom: 1px solid var(--medium-gray); */ /* Розкоментуйте, якщо потрібне підкреслення */
 }
