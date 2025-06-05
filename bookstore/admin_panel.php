@@ -25,7 +25,7 @@ if (isset($_GET['success_add'])) {
     $page_alert_message = "Книгу успішно додано!";
     $page_alert_type = 'success';
 } elseif (isset($_GET['success_delete'])) {
-    $page_alert_message = "Замовлення успішно видалено!";
+    $page_alert_message = htmlspecialchars($_GET['success_delete']); // Беремо повідомлення з GET
     $page_alert_type = 'success';
 } elseif (isset($_GET['error_delete'])) {
     $page_alert_message = "Помилка видалення замовлення: " . htmlspecialchars($_GET['error_delete']);
@@ -36,11 +36,12 @@ if (isset($_GET['success_add'])) {
 }
 
 
-// 5. Запит для отримання всіх замовлень (також отримуємо статус)
-$orders_query_sql = "SELECT id, user_id, name, email, address, phone, total, created_at, status FROM `orders` ORDER BY created_at DESC";
-$orders_result_query = mysqli_query($conn, $orders_query_sql); // Використовуємо іншу змінну
-$orders_data_admin = []; // Масив для зберігання даних замовлень
-$order_items_by_order_id_admin = []; // Масив для деталей замовлень
+// 5. Запит для отримання всіх замовлень
+// ВИДАЛЕНО `status` ІЗ ЗАПИТУ
+$orders_query_sql = "SELECT id, user_id, name, email, address, phone, total, created_at FROM `orders` ORDER BY created_at DESC";
+$orders_result_query = mysqli_query($conn, $orders_query_sql);
+$orders_data_admin = [];
+$order_items_by_order_id_admin = [];
 
 if ($orders_result_query) {
     $order_ids_admin = [];
@@ -49,7 +50,6 @@ if ($orders_result_query) {
         $order_ids_admin[] = $order_row_admin['id'];
     }
 
-    // Оптимізований запит для отримання всіх order_items
     if (!empty($order_ids_admin)) {
         $ids_placeholder_admin = implode(',', array_fill(0, count($order_ids_admin), '?'));
         $types_for_items_admin = str_repeat('i', count($order_ids_admin));
@@ -78,7 +78,7 @@ if ($orders_result_query) {
     }
 } else {
     error_log("Помилка отримання замовлень в адмін-панелі: " . mysqli_error($conn));
-    if (empty($page_alert_message)) { // Встановлюємо повідомлення, тільки якщо його ще немає
+    if (empty($page_alert_message)) {
         $page_alert_message = "Виникла помилка при завантаженні списку замовлень.";
         $page_alert_type = 'danger';
     }
@@ -93,7 +93,7 @@ include_once('includes/header.php');
 ?>
 
 <?php // 9. HTML-контент сторінки ?>
-    <section class="admin-panel-container"> <?php // Змінено клас для уникнення конфлікту з .admin-content, якщо такий є в CSS ?>
+    <section class="admin-panel-container">
         <div class="section-title-container"><h2>Управління книгарнею</h2></div>
 
         <?php // Виведення повідомлень (якщо є) ?>
@@ -106,7 +106,7 @@ include_once('includes/header.php');
                 else echo '&#8505;';
                 ?>
             </span>
-                <?php echo $page_alert_message; // Дозволяємо HTML, якщо повідомлення його містить (рідко для адмінки) ?>
+                <?php echo $page_alert_message; ?>
             </div>
         <?php endif; ?>
 
@@ -123,7 +123,7 @@ include_once('includes/header.php');
                 </div>
                 <div class="form-group">
                     <label for="description">Опис:</label>
-                    <textarea name="description" id="description" rows="4" required></textarea> <?php // Зменшено rows ?>
+                    <textarea name="description" id="description" rows="4" required></textarea>
                 </div>
                 <div class="form-group">
                     <label for="genre">Жанр:</label>
@@ -135,9 +135,9 @@ include_once('includes/header.php');
                 </div>
                 <div class="form-group">
                     <label for="image">Зображення (jpg, jpeg, png, до 5MB):</label>
-                    <input type="file" name="image" id="image" accept=".jpg, .jpeg, .png" required> <?php // Оновлено accept ?>
+                    <input type="file" name="image" id="image" accept=".jpg, .jpeg, .png" required>
                 </div>
-                <button type="submit" name="submit" class="btn-generic btn-positive" style="min-width: 200px;"> <?php // Стиль min-width залишено, якщо потрібен ?>
+                <button type="submit" name="submit" class="btn-generic btn-positive" style="min-width: 200px;">
                     <span class="icon" aria-hidden="true">➕</span> Додати книгу
                 </button>
             </form>
@@ -155,14 +155,14 @@ include_once('includes/header.php');
                             <th>Дата</th>
                             <th>Ім'я</th>
                             <th>Телефон</th>
+                            <th>Адреса</th> <?php // Додано Адресу, якщо потрібно її бачити тут ?>
                             <th>Сума</th>
-                            <th>Статус</th> <?php // Новий стовпець ?>
                             <th>Склад</th>
                             <th>Дії</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($orders_data_admin as $order_admin): // Змінено ім'я змінної ?>
+                        <?php foreach ($orders_data_admin as $order_admin): ?>
                             <tr>
                                 <td>
                                     <a href="admin_order_detail.php?id=<?php echo $order_admin['id']; ?>" class="text-link">#<?php echo $order_admin['id']; ?></a>
@@ -175,26 +175,8 @@ include_once('includes/header.php');
                                 <td><?php echo date("d.m.Y H:i", strtotime($order_admin['created_at'])); ?></td>
                                 <td><?php echo htmlspecialchars($order_admin['name']); ?><br><small><?php echo htmlspecialchars($order_admin['email']); ?></small></td>
                                 <td><?php echo htmlspecialchars($order_admin['phone']); ?></td>
+                                <td><?php echo htmlspecialchars($order_admin['address']); ?></td> <?php // Вивід адреси ?>
                                 <td><?php echo number_format($order_admin['total'], 2); ?> грн</td>
-                                <td>
-                                    <?php // Відображення та форма зміни статусу
-                                    $current_status_admin = isset($order_admin['status']) ? $order_admin['status'] : 'new';
-                                    $statuses = ['new' => 'Нове', 'processing' => 'В обробці', 'shipped' => 'Відправлено', 'delivered' => 'Доставлено', 'cancelled' => 'Скасовано'];
-                                    echo $statuses[$current_status_admin] ?? htmlspecialchars($current_status_admin);
-                                    ?>
-                                    <?php /* Форма зміни статусу (потребує окремого обробника update_order_status.php)
-                                <form action="update_order_status.php" method="POST" style="margin-top:5px;">
-                                    <input type="hidden" name="order_id" value="<?php echo $order_admin['id']; ?>">
-                                    <select name="status" onchange="this.form.submit()" class="form-control-sm">
-                                        <?php foreach ($statuses as $status_key => $status_value): ?>
-                                            <option value="<?php echo $status_key; ?>" <?php if ($current_status_admin == $status_key) echo 'selected'; ?>>
-                                                <?php echo $status_value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </form>
-                                */ ?>
-                                </td>
                                 <td>
                                     <?php
                                     if (isset($order_items_by_order_id_admin[$order_admin['id']]) && !empty($order_items_by_order_id_admin[$order_admin['id']])) {
@@ -210,18 +192,13 @@ include_once('includes/header.php');
                                     <a class="action-link-danger" href="delete_order.php?id=<?php echo $order_admin['id']; ?>" onclick="return confirm('Ви впевнені, що хочете видалити замовлення #<?php echo $order_admin['id']; ?>? Ця дія незворотна.')">
                                         <span class="icon" aria-hidden="true">🗑️</span> Видалити
                                     </a>
-                                    <?php /* Посилання на редагування (якщо буде така сторінка)
-                                <a class="action-link-edit" href="edit_order.php?id=<?php echo $order_admin['id']; ?>" style="margin-top: 5px;">
-                                    <span class="icon" aria-hidden="true">✏️</span> Редагувати
-                                </a>
-                                */ ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
-            <?php elseif (empty($page_alert_message)): // Якщо немає замовлень і не було помилки завантаження ?>
+            <?php elseif (empty($page_alert_message)): ?>
                 <p class="no-items-info">Немає замовлень для відображення.</p>
             <?php endif; ?>
         </div>
@@ -231,7 +208,6 @@ include_once('includes/header.php');
 if (isset($orders_result_query) && $orders_result_query instanceof mysqli_result) {
     mysqli_free_result($orders_result_query);
 }
-// Інші ресурси ($stmt_items_all_admin, $items_result_all_admin) закриваються всередині блоків
 
 if (isset($conn) && $conn instanceof mysqli && mysqli_ping($conn)) {
     mysqli_close($conn);

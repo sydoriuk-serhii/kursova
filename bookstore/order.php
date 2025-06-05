@@ -58,6 +58,7 @@ if (isset($_GET['delete_id'])) {
                 if(!$delete_items_query) throw new mysqli_sql_exception("Помилка підготовки запиту видалення позицій.");
                 $delete_items_query->bind_param("i", $delete_id);
                 $delete_items_query->execute();
+                // Немає потреби перевіряти affected_rows для order_items, замовлення може бути порожнім
                 $delete_items_query->close();
 
                 $delete_order_query = $conn->prepare("DELETE FROM orders WHERE id = ? AND user_id = ?");
@@ -70,13 +71,20 @@ if (isset($_GET['delete_id'])) {
                     $redirect_message = "Замовлення {$order_title_for_message} успішно видалено.";
                 } else {
                     mysqli_rollback($conn);
-                    $redirect_message = "Помилка: Не вдалося видалити замовлення {$order_title_for_message}.";
+                    $redirect_message = "Помилка: Не вдалося видалити замовлення {$order_title_for_message} (можливо, вже видалено).";
                 }
                 $delete_order_query->close();
             } catch (mysqli_sql_exception $exception) {
                 mysqli_rollback($conn);
                 error_log("Помилка видалення замовлення (ID: {$delete_id}, User: {$user_id}): " . $exception->getMessage());
                 $redirect_message = "Сталася помилка бази даних при видаленні замовлення {$order_title_for_message}.";
+            } finally { // Додано finally для закриття стейтментів, якщо вони ще відкриті
+                if (isset($delete_items_query) && $delete_items_query instanceof mysqli_stmt) {
+                    $delete_items_query->close();
+                }
+                if (isset($delete_order_query) && $delete_order_query instanceof mysqli_stmt) {
+                    $delete_order_query->close();
+                }
             }
         } else {
             $redirect_message = "Помилка: Замовлення {$order_title_for_message} не знайдено або у вас немає прав на його видалення.";
@@ -93,8 +101,8 @@ if (isset($_GET['delete_id'])) {
 }
 
 // 5. Отримання замовлень поточного авторизованого користувача
-// Додамо поле status, якщо воно є у вашій таблиці orders
-$order_query_sql = "SELECT id, name, email, address, phone, total, created_at, status FROM orders WHERE user_id = ? ORDER BY created_at DESC";
+// ВИДАЛЕНО `status` ІЗ ЗАПИТУ
+$order_query_sql = "SELECT id, name, email, address, phone, total, created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC";
 $order_query = $conn->prepare($order_query_sql);
 $orders_data = []; // Масив для зберігання даних замовлень
 $order_items_by_order_id = []; // Масив для деталей замовлень
@@ -107,12 +115,11 @@ if ($order_query) {
     if ($order_result) {
         $order_ids = [];
         while($order_row_temp = $order_result->fetch_assoc()) {
-            $orders_data[] = $order_row_temp; // Зберігаємо дані замовлень
+            $orders_data[] = $order_row_temp;
             $order_ids[] = $order_row_temp['id'];
         }
-        // $order_result->close(); // Не закриваємо тут, якщо плануємо використовувати його далі або замінюємо на $orders_data
+        // $order_result->close(); // Можна закрити, якщо далі не використовується, але дані вже в $orders_data
 
-        // Оптимізований запит для отримання всіх order_items
         if (!empty($order_ids)) {
             $ids_placeholder = implode(',', array_fill(0, count($order_ids), '?'));
             $types_for_items = str_repeat('i', count($order_ids));
@@ -132,19 +139,19 @@ if ($order_query) {
                     }
                     $items_result_all->close();
                 } else {
-                    error_log("Помилка виконання запиту деталей замовлень: " . $stmt_items_all->error);
+                    error_log("Помилка виконання запиту деталей замовлень (user): " . $stmt_items_all->error);
                 }
                 $stmt_items_all->close();
             } else {
-                error_log("Помилка підготовки запиту деталей замовлень: " . $conn->error);
+                error_log("Помилка підготовки запиту деталей замовлень (user): " . $conn->error);
             }
         }
     } else {
-        error_log("Помилка виконання запиту замовлень: " . $order_query->error);
+        error_log("Помилка виконання запиту замовлень (user): " . $order_query->error);
     }
     $order_query->close();
 } else {
-    error_log("Помилка підготовки запиту замовлень: " . $conn->error);
+    error_log("Помилка підготовки запиту замовлень (user): " . $conn->error);
     $page_alert_message = "Не вдалося завантажити ваші замовлення.";
     $page_alert_type = 'danger';
 }
@@ -174,7 +181,7 @@ include_once('includes/header.php');
     </div>
 <?php endif; ?>
 
-<?php if (!empty($orders_data)): // Використовуємо $orders_data для перевірки ?>
+<?php if (!empty($orders_data)): ?>
     <div class="data-table-container">
         <table class="data-table user-orders-table">
             <thead>
@@ -182,47 +189,28 @@ include_once('includes/header.php');
                 <th>ID</th>
                 <th>Дата</th>
                 <th>Отримувач</th>
-                <?php /* <th>Email</th> // Можна приховати, якщо не критично */ ?>
                 <th>Телефон</th>
                 <th>Адреса</th>
                 <th>Сума</th>
-                <th>Статус</th> <?php // Новий стовпець ?>
                 <th>Склад замовлення</th>
                 <th>Дія</th>
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($orders_data as $order): // Ітеруємо по $orders_data ?>
+            <?php foreach ($orders_data as $order): ?>
                 <tr>
-                    <td><a href="order_detail.php?id=<?php echo $order['id']; ?>" class="text-link">#<?php echo $order['id']; ?></a></td> <?php // ID як посилання ?>
+                    <td><a href="order_detail.php?id=<?php echo $order['id']; ?>" class="text-link">#<?php echo $order['id']; ?></a></td>
                     <td><?php echo date("d.m.Y H:i", strtotime($order['created_at'])); ?></td>
                     <td><?php echo htmlspecialchars($order['name']); ?></td>
-                    <?php /* <td><?php echo htmlspecialchars($order['email']); ?></td> */ ?>
                     <td><?php echo htmlspecialchars($order['phone']); ?></td>
                     <td><?php echo htmlspecialchars($order['address']); ?></td>
                     <td><?php echo number_format($order['total'], 2); ?> грн</td>
-                    <td>
-                        <?php // Відображення статусу. Потрібно додати логіку для різних статусів
-                        $status_text = 'Невідомо';
-                        if (isset($order['status'])) {
-                            switch ($order['status']) {
-                                case 'new': $status_text = 'Нове'; break;
-                                case 'processing': $status_text = 'В обробці'; break;
-                                case 'shipped': $status_text = 'Відправлено'; break;
-                                case 'delivered': $status_text = 'Доставлено'; break;
-                                case 'cancelled': $status_text = 'Скасовано'; break;
-                                default: $status_text = htmlspecialchars($order['status']);
-                            }
-                        }
-                        echo $status_text;
-                        ?>
-                    </td>
                     <td>
                         <?php
                         if (isset($order_items_by_order_id[$order['id']]) && !empty($order_items_by_order_id[$order['id']])) {
                             echo "<ul>";
                             foreach ($order_items_by_order_id[$order['id']] as $item) {
-                                echo "<li>" . htmlspecialchars($item['title']) . " (" . (int)$item['quantity'] . " шт. &times; " . number_format((float)$item['price'], 2) . " грн)</li>"; // = " . number_format((float)$item['price'] * (int)$item['quantity'], 2) . " грн
+                                echo "<li>" . htmlspecialchars($item['title']) . " (" . (int)$item['quantity'] . " шт. &times; " . number_format((float)$item['price'], 2) . " грн)</li>";
                             }
                             echo "</ul>";
                         } else {
@@ -240,13 +228,11 @@ include_once('includes/header.php');
             </tbody>
         </table>
     </div>
-<?php elseif (empty($page_alert_message)): // Якщо немає замовлень і не було помилки завантаження ?>
+<?php elseif (empty($page_alert_message)): ?>
     <p class="no-items-info">У вас поки немає замовлень. <a href="catalog.php" class="alert-link">Перейти до каталогу?</a></p>
 <?php endif; ?>
 
 <?php
-// Закриття основного запиту замовлень не потрібне, якщо $order_query вже закрито
-
 // 10. Закриваємо з'єднання з БД
 if (isset($conn) && $conn instanceof mysqli && mysqli_ping($conn)) {
     mysqli_close($conn);

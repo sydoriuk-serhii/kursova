@@ -48,10 +48,9 @@ $sql_where = "";
 if (count($conditions) > 0) {
     $sql_where = "WHERE " . implode(" AND ", $conditions);
 }
-
 // 5. Формування та виконання запиту для отримання книг
 $books_sql = "SELECT * FROM books $sql_where ORDER BY title ASC";
-$result = null; // Ініціалізуємо $result
+$result = null;
 
 if (!empty($params)) {
     $stmt_books = $conn->prepare($books_sql);
@@ -59,7 +58,7 @@ if (!empty($params)) {
         $stmt_books->bind_param($types, ...$params);
         $stmt_books->execute();
         $result = $stmt_books->get_result();
-        if (!$result && empty($page_alert_message)) { // Якщо запит не вдався і немає іншого повідомлення
+        if (!$result && empty($page_alert_message)) {
             $page_alert_message = "Виникла помилка при завантаженні каталогу (stmt).";
             $page_alert_type = 'danger';
         }
@@ -82,7 +81,6 @@ if (!empty($params)) {
         }
     }
 }
-
 // 6. Отримання списку жанрів та авторів для фільтрів
 $genres_result_q = mysqli_query($conn, "SELECT DISTINCT genre FROM books WHERE genre IS NOT NULL AND genre != '' ORDER BY genre ASC");
 $authors_result_q = mysqli_query($conn, "SELECT DISTINCT author FROM books WHERE author IS NOT NULL AND author != '' ORDER BY author ASC");

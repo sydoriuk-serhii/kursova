@@ -84,6 +84,7 @@ if (isset($_POST['book_id']) && is_numeric($_POST['book_id'])) {
             if ($result) $result->close();
             $query_book->close();
             if (isset($conn)) mysqli_close($conn);
+            if (isset($conn)) mysqli_close($conn);
             header("Location: catalog.php?message=" . urlencode("Помилка: Книгу не знайдено в базі даних."));
             exit();
         }
